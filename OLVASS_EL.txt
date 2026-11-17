@@ -1,0 +1,19 @@
+3D RALLY – online változat feltöltése GitHub Pagesre (ingyenes)
+
+1. Regisztrálj vagy lépj be: https://github.com
+2. Jobb fent "+" → "New repository". Név: rally (Public). "Create repository".
+3. A megjelenő oldalon: "uploading an existing file" link.
+4. Csomagold ki ezt a zip-et, és húzd be a TARTALMÁT (index.html és a js mappa) a böngészőbe.
+   Fontos: az index.html a repository gyökerében legyen, ne egy almappában.
+5. Lent "Commit changes".
+6. Settings → Pages → "Deploy from a branch" → Branch: main, mappa: / (root) → Save.
+7. 1-2 perc múlva megjelenik a link, pl.: https://felhasznalonev.github.io/rally/
+8. Küldd el a linket a barátodnak.
+
+Játék:
+- Te: Online játék → Szoba létrehozása → kapsz egy 5 betűs kódot, küldd el a barátodnak.
+- Barátod: ugyanazon a linken Online játék → Csatlakozás kóddal → beírja a kódot.
+- A házigazda választja a pályát, a köröket és a gépi autókat, majd Rajt.
+
+Ha nem jön létre a kapcsolat: próbáljátok másik hálózatról (pl. mobilnetről),
+mert néhány céges/iskolai hálózat tiltja a közvetlen kapcsolatot.

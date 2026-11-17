@@ -1,0 +1,37 @@
+const tmp=new THREE.Vector3(),look=new THREE.Vector3(),camLook=new THREE.Vector3();let last=performance.now(),T=0,orb=0,first=true,acc=0,camYaw=0,camDist=11,shakeT=0;
+const STEP=1000/120;
+function ex(k,dt){return 1-Math.exp(-k*dt);}
+function loop(t){const dt=Math.min(100,t-last);last=t;T+=dt;const d=dt/16.67;
+if(mode==='count'){cdE+=dt;const n=Math.min(5,Math.floor(cdE/600));if(n!==lastLit&&cdE<3600){lastLit=n;lamps(n);if(n>0)beep(440,0.18);}
+if(cdE>=3600){mode='race';acc=0;lamps(0,true);beep(880,0.4,0.06);toast('Rajt!','#2ee66b');setTimeout(()=>{if(mode!=='menu')$('lt').style.display='none';},900);setTimeout(()=>{if(mode!=='count')lamps(0);},2500);}}
+if(mode==='race'||mode==='done'||(mode==='pause'&&NET.on)){acc+=dt;let n=0;while(acc>=STEP&&n<12){gt+=STEP;step(STEP/16.67,STEP);acc-=STEP;n++;}if(n>=12)acc=0;}
+const al=(mode==='race'||mode==='done'||(mode==='pause'&&NET.on))?acc/STEP:1;netTick(dt);visuals(al,d,T);
+dustStep(d);if(CLOUD)CLOUD.rotation.y+=dt*0.000005;
+FLAGS.forEach(f=>f.m.rotation.y=f.b+Math.sin(T*0.004+f.p)*0.35);
+const exc=mode==='race'||mode==='done'?1:0.4;
+for(const cr of CROWD){cr.l.forEach((q,i)=>{const y=q[1]+Math.max(0,Math.sin(T*0.009+q[3]))*0.28*exc;DO.rotation.set(0,0,0);DO.scale.set(1,1,1);DO.position.set(q[0],y,q[2]);DO.updateMatrix();cr.b.setMatrixAt(i,DO.matrix);DO.position.y=y+0.55;DO.updateMatrix();cr.h.setMatrixAt(i,DO.matrix);});cr.b.instanceMatrix.needsUpdate=true;cr.h.instanceMatrix.needsUpdate=true;}
+if(mode==='menu'){orb+=dt*0.00008;let lk,fv;
+if(stepI===2&&pl){tmp.set(pl.x+Math.sin(orb*4)*9.5,2.6,pl.z+Math.cos(orb*4)*9.5);lk=look.set(pl.x,0.7,pl.z);fv=38;shadowAt(pl.x,pl.z,40);}
+else{tmp.set(CX+Math.sin(orb)*RAD*1.05,RAD*0.5,CZ+Math.cos(orb)*RAD*1.05);lk=look.set(CX,0,CZ);fv=50;shadowAt(CX,CZ,RAD*1.4);}
+if(first){cam.position.copy(tmp);camLook.copy(lk);first=false;}const e=ex(0.0035,dt);cam.position.lerp(tmp,e);camLook.lerp(lk,e);cam.lookAt(camLook);cam.fov+=(fv-cam.fov)*e;cam.updateProjectionMatrix();}
+else{const fx=Math.sin(pl.ra),fz=Math.cos(pl.ra),sp=Math.hypot(pl.vx,pl.vz);
+if(camMode===2){cam.position.set(pl.rx+fx*2.1,0.95,pl.rz+fz*2.1);cam.lookAt(pl.rx+fx*30,0.85,pl.rz+fz*30);camYaw=pl.ra;}
+else{const tgt=pl.ra+(pl.v>0.2?wrap(Math.atan2(pl.vx,pl.vz)-pl.ra)*0.35:0);camYaw+=wrap(tgt-camYaw)*ex(0.006,dt);
+const tdist=camMode===0?10.8+sp*2:6.8+sp*1.2;camDist+=(tdist-camDist)*ex(0.003,dt);const h=camMode===0?3.9+camDist*0.07:2.3+camDist*0.05;
+const cf=Math.sin(camYaw),cz=Math.cos(camYaw);let sx=0,sy=0;
+if(mode==='race'&&(!pl.on&&!pl.kerb)&&sp>0.2){shakeT+=dt;const a=Math.min(1,sp)*0.06;sx=Math.sin(shakeT*0.031)*a;sy=Math.sin(shakeT*0.047+1)*a;}
+cam.position.set(pl.rx-cf*camDist+sx,h+sy,pl.rz-cz*camDist);cam.lookAt(pl.rx+cf*5,1.25,pl.rz+cz*5);}
+const tf=58+Math.min(1,sp/1.25)*14;cam.fov+=(tf-cam.fov)*ex(0.004,dt);cam.updateProjectionMatrix();shadowAt(pl.rx+fx*18,pl.rz+fz*18,62);}
+if(SNOW){const a=SNOW.geometry.attributes.position,ar=a.array,cx=cam.position.x,cz=cam.position.z;for(let i=0;i<ar.length;i+=3){ar[i+1]-=0.12*d;ar[i]+=Math.sin(T*0.001+i)*0.02*d;if(ar[i+1]<cam.position.y-20)ar[i+1]+=50;if(ar[i]-cx>70)ar[i]-=140;else if(cx-ar[i]>70)ar[i]+=140;if(ar[i+2]-cz>70)ar[i+2]-=140;else if(cz-ar[i+2]>70)ar[i+2]+=140;}a.needsUpdate=true;}
+sky.position.copy(cam.position);sunS.position.copy(cam.position).addScaledVector(SUND,1500);
+let ge={rpm:0.15};if(mode!=='menu')ge=hud(T);
+const sl=pl?pl.slip+(pl.hb&&Math.abs(pl.v)>0.3?0.06:0):0;
+if(mode==='race'||mode==='count')engine(true,mode==='count'?(keys.up?0.75:0.15):ge.rpm,mode==='race'?sl:0);else if(mode==='done')engine(true,ge.rpm*0.7,0);else engine(false,0,0);
+if(mode==='done'&&$('done').classList.contains('on')){doneT+=dt;if(doneT>600){doneT=0;results();}}
+ren.render(scene,cam);requestAnimationFrame(loop);}
+function applyQ(){ren.setPixelRatio(cfg.q?DPR:1);const ms=cfg.q?2048:1024;sun.shadow.mapSize.set(ms,ms);if(sun.shadow.map){sun.shadow.map.dispose();sun.shadow.map=null;}rs();}
+function rebuild(){$('load').style.display='flex';$('load').style.opacity=1;setTimeout(()=>{buildTrack(cfg.t);newRace();prev();if(stepI===6)menuRender(true);},40);}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&!NET.on)pause();});
+let fsExit=0;document.addEventListener('fullscreenchange',()=>{if(!isFS()){fsExit=performance.now();pause();}});
+setSnd(true);fsIcons();applyQ();
+setTimeout(()=>{buildTrack(0);newRace();show('menu');menuRender();rs();requestAnimationFrame(loop);},30);
