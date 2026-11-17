@@ -137,8 +137,8 @@ CARS.forEach((c,i)=>Object.assign(c,[{rwd:1,df:0.22,resp:1},{rwd:0,df:0.04,resp:
 function mergeGroup(gr){const by=new Map(),rm=[];gr.children.forEach(m=>{if(!m.isMesh||m.userData.dyn)return;m.updateMatrix();const g=m.geometry.clone().applyMatrix4(m.matrix);let a=by.get(m.material);if(!a)by.set(m.material,a=[]);a.push(g);rm.push(m);});
 rm.forEach(m=>gr.remove(m));const out=[];by.forEach((l,mat)=>{const geo=mergeGeo(l);geo.userData.k=0;l.forEach(g=>g.dispose());const mm=new THREE.Mesh(geo,mat);mm.castShadow=true;gr.add(mm);out.push(geo);});return out;}
 
-const pudT=ctex(128,128,(x)=>{for(let i=0;i<9;i++){const cx=40+Math.random()*48,cy=40+Math.random()*48,r=22+Math.random()*26,g=x.createRadialGradient(cx,cy,0,cx,cy,r);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(0.7,'rgba(255,255,255,0.85)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,128,128);}});
-const PUDMAT=new THREE.MeshStandardMaterial({color:0x1d2329,roughness:0.04,metalness:0.6,transparent:true,opacity:0,alphaMap:pudT,depthWrite:false});
+const pudT=ctex(128,128,(x)=>{x.fillStyle='#000';x.fillRect(0,0,128,128);for(let i=0;i<9;i++){const cx=40+Math.random()*48,cy=40+Math.random()*48,r=18+Math.random()*24,g=x.createRadialGradient(cx,cy,0,cx,cy,r);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(0.65,'rgba(255,255,255,0.8)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,128,128);}const g=x.createRadialGradient(64,64,30,64,64,64);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,1)');x.fillStyle=g;x.fillRect(0,0,128,128);});
+const PUDMAT=new THREE.MeshStandardMaterial({color:0x2a3138,roughness:0.06,metalness:0.55,transparent:true,opacity:0,alphaMap:pudT,depthWrite:false});
 
 PG.hairL=mergeGeo([new THREE.SphereGeometry(0.128,12,7,0,Math.PI*2,0,Math.PI*0.58).scale(0.97,1.06,1.08).translate(0,0.85,-0.015),new THREE.CylinderGeometry(0.115,0.1,0.24,10,1,true,Math.PI*0.5,Math.PI).translate(0,0.74,-0.02)]);
 const fenceT=ctex(64,64,x=>{x.clearRect(0,0,64,64);x.strokeStyle='rgba(235,238,242,1)';x.lineWidth=2;for(let i=-64;i<128;i+=16){x.beginPath();x.moveTo(i,0);x.lineTo(i+64,64);x.stroke();x.beginPath();x.moveTo(i+64,0);x.lineTo(i,64);x.stroke();}},true);
@@ -147,3 +147,10 @@ const GLOWP=new THREE.PointsMaterial({map:softT,color:0xfff0c8,size:9,transparen
 const lpoolT=ctex(128,128,x=>{const g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'rgba(255,236,200,0.9)');g.addColorStop(0.6,'rgba(255,236,200,0.25)');g.addColorStop(1,'rgba(255,236,200,0)');x.fillStyle=g;x.fillRect(0,0,128,128);});
 const LPOOLM=new THREE.MeshBasicMaterial({map:lpoolT,blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,opacity:0.5});
 GEO.prism=K(new THREE.CylinderGeometry(1,1,1,3).rotateZ(Math.PI/2).rotateY(Math.PI/2));GEO.tent=K(new THREE.ConeGeometry(1,1,4).translate(0,0.5,0).rotateY(Math.PI/4));
+
+const glowT=ctex(128,128,x=>{let g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(0.08,'rgba(255,250,235,0.95)');g.addColorStop(0.22,'rgba(255,235,200,0.4)');g.addColorStop(0.5,'rgba(255,225,180,0.1)');g.addColorStop(1,'rgba(255,220,170,0)');x.fillStyle=g;x.fillRect(0,0,128,128);
+x.globalCompositeOperation='lighter';for(const a of[0,Math.PI/2]){x.save();x.translate(64,64);x.rotate(a);const l=x.createLinearGradient(-64,0,64,0);l.addColorStop(0,'rgba(255,240,210,0)');l.addColorStop(0.5,'rgba(255,240,210,0.22)');l.addColorStop(1,'rgba(255,240,210,0)');x.fillStyle=l;x.fillRect(-64,-1.5,128,3);x.restore();}});
+const ledT=ctex(128,64,x=>{x.fillStyle='#2a2d33';x.fillRect(0,0,128,64);for(let i=0;i<8;i++)for(let j=0;j<4;j++){const cx=10+i*15.5,cy=10+j*14.5,g=x.createRadialGradient(cx,cy,0,cx,cy,7);g.addColorStop(0,'#ffffff');g.addColorStop(0.5,'#fff3d6');g.addColorStop(1,'#8a8270');x.fillStyle=g;x.beginPath();x.arc(cx,cy,6,0,7);x.fill();}});
+MAT.flood=new THREE.MeshBasicMaterial({map:ledT});MAT.lens=new THREE.MeshBasicMaterial({color:0xfff6e0});
+const GLOWS_M=new THREE.SpriteMaterial({map:glowT,color:0xfff1d2,blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,opacity:0.85});
+GEO.lhead=K(new THREE.SphereGeometry(0.55,14,8,0,Math.PI*2,0,Math.PI/2).scale(1,0.45,1.6));GEO.disc=K(new THREE.CircleGeometry(0.42,16).rotateX(Math.PI/2));

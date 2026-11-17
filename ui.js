@@ -14,7 +14,7 @@ function leave(){if(NET.on&&NET.host)toLobby();else toMenu();}
 function setSnd(v){snd=v&&SET.vol>0;['sb','msb'].forEach(id=>$(id).innerHTML=svg(snd?'vol':'mute'));}
 function isFS(){return!!(document.fullscreenElement||document.webkitFullscreenElement);}
 function toggleFS(){try{if(isFS())(document.exitFullscreen||document.webkitExitFullscreen).call(document);else{const r=(G.requestFullscreen||G.webkitRequestFullscreen);if(r){const p=r.call(G);if(p&&p.catch)p.catch(()=>toast(T('fsDen')));}else toast(T('fsNo'));}}catch(e){toast(T('fsNo'));}}
-function fsIcons(){['eb','mex'].forEach(id=>$(id).innerHTML=svg(isFS()?'min':'max'));}
+function fsIcons(){['eb','mex'].forEach(id=>$(id).innerHTML=svg(isFS()?'min':'max'));G.classList.toggle('fsm',isFS()&&touch);}
 document.addEventListener('fullscreenchange',fsIcons);document.addEventListener('webkitfullscreenchange',fsIcons);
 function nextCam(){camMode=(camMode+1)%4;toast(TA_('camN')[camMode]);}
 
