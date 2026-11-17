@@ -15,13 +15,13 @@ if((stepI===2||stepI===9)&&pl){tmp.set(pl.x+Math.sin(orb*4)*9.5,2.6,pl.z+Math.co
 else{tmp.set(CX+Math.sin(orb)*RAD*1.05,RAD*0.5,CZ+Math.cos(orb)*RAD*1.05);lk=look.set(CX,0,CZ);fv=50;shadowAt(CX,CZ,RAD*1.4);}
 if(first){cam.position.copy(tmp);camLook.copy(lk);first=false;}const e=ex(0.0035,dt);cam.position.lerp(tmp,e);camLook.lerp(lk,e);cam.lookAt(camLook);cam.fov+=(fv-cam.fov)*e;cam.updateProjectionMatrix();}
 else{const fx=Math.sin(pl.ra),fz=Math.cos(pl.ra),sp=Math.hypot(pl.vx,pl.vz);
-if(camMode===2||camMode===3){const v=pl.v3,ck=camMode===3,lx=ck?v.hx:0,lz=ck?v.hz+0.24:2.1,ly=ck?v.hy+0.1+v.inn.rotation.x*0.4:0.95,rx=Math.cos(pl.ra),rz=-Math.sin(pl.ra);cam.position.set(pl.rx+fx*lz+rx*lx,ly,pl.rz+fz*lz+rz*lx);cam.lookAt(pl.rx+fx*40+rx*lx,ck?ly-0.35:0.85,pl.rz+fz*40+rz*lx);if(ck)cam.rotateZ(-v.inn.rotation.z*0.6);camYaw=pl.ra;}
+if(camMode===2||camMode===3){const v=pl.v3,ck=camMode===3,lx=ck?v.hx:0,lz=ck?v.hz+0.07:2.1,ly=ck?v.hy+0.09+v.inn.rotation.x*0.4:0.95,rx=Math.cos(pl.ra),rz=-Math.sin(pl.ra);cam.position.set(pl.rx+fx*lz+rx*lx,ly,pl.rz+fz*lz+rz*lx);cam.lookAt(pl.rx+fx*40+rx*lx,ck?ly-2.4:0.85,pl.rz+fz*40+rz*lx);if(ck)cam.rotateZ(-v.inn.rotation.z*0.6);camYaw=pl.ra;}
 else{const tgt=pl.ra+(pl.v>0.2?wrap(Math.atan2(pl.vx,pl.vz)-pl.ra)*0.35:0);camYaw+=wrap(tgt-camYaw)*ex(0.006,dt);
 const tdist=(camMode===0?10.8+sp*2:6.8+sp*1.2)+(pl.boost?1.1:0);camDist+=(tdist-camDist)*ex(0.003,dt);const h=camMode===0?3.9+camDist*0.07:2.3+camDist*0.05;
 const cf=Math.sin(camYaw),cz=Math.cos(camYaw);let sx=0,sy=0;
 if(mode==='race'&&(!pl.on&&!pl.kerb)&&sp>0.2){shakeT+=dt;const a=Math.min(1,sp)*0.06;sx=Math.sin(shakeT*0.031)*a;sy=Math.sin(shakeT*0.047+1)*a;}
 cam.position.set(pl.rx-cf*camDist+sx,h+sy,pl.rz-cz*camDist);cam.lookAt(pl.rx+cf*5,1.25,pl.rz+cz*5);}
-const tf=58+Math.min(1,sp/1.25)*14+(pl.boost?7:0);cam.fov+=(tf-cam.fov)*ex(0.004,dt);cam.near=camMode===3?0.04:0.3;cam.updateProjectionMatrix();shadowAt(pl.rx+fx*18,pl.rz+fz*18,62);}
+const tf=(camMode===3?70:58)+Math.min(1,sp/1.25)*14+(pl.boost?7:0);cam.fov+=(tf-cam.fov)*ex(0.004,dt);cam.near=camMode===3?0.04:0.3;cam.updateProjectionMatrix();shadowAt(pl.rx+fx*18,pl.rz+fz*18,62);}
 if(SNOW){const a=SNOW.geometry.attributes.position,ar=a.array,cx=cam.position.x,cz=cam.position.z;for(let i=0;i<ar.length;i+=3){ar[i+1]-=0.12*d;ar[i]+=Math.sin(TT*0.001+i)*0.02*d;if(ar[i+1]<cam.position.y-20)ar[i+1]+=50;if(ar[i]-cx>70)ar[i]-=140;else if(cx-ar[i]>70)ar[i]+=140;if(ar[i+2]-cz>70)ar[i+2]-=140;else if(cz-ar[i+2]>70)ar[i+2]+=140;}a.needsUpdate=true;}
 sky.position.copy(cam.position);sunS.position.copy(cam.position).addScaledVector(SUND,1500);
 let ge={rpm:0.15};if(mode!=='menu')ge=hud(TT);

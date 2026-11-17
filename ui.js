@@ -23,7 +23,7 @@ function stepper(){const lb=[T('sTrack'),T('sCar'),T('sCustom'),T('sRace')],ord=
 function go(n){stepI=n;menuRender();}
 function foot(bl,bs,gl,gs,gid){$('mf').innerHTML='<button class="gh" id="fb">'+svg('arrL')+'<span>'+bl+'</span></button>'+(gl?'<button class="go" id="'+(gid||'fg')+'" style="flex:1">'+gl+'</button>':'');
 $('fb').onclick=typeof bs==='function'?bs:()=>go(bs);if(gl&&typeof gs!=='undefined')$(gid||'fg').onclick=typeof gs==='function'?gs:()=>go(gs);}
-function cards(el,items,key,cb){el.innerHTML='';items.forEach((it,i)=>{const b=document.createElement('button');b.className='co'+(cfg[key]===i?' sel':'');b.innerHTML=it.h;b.setAttribute('aria-label',it.a);
+function cards(el,items,key,cb){el.innerHTML='';items.forEach((it,i)=>{const b=document.createElement('button');b.className='co'+(cfg[key]===i?' sel':'');b.innerHTML=it.h+'<span class="ck">'+svg('check')+'</span>';b.setAttribute('aria-label',it.a);
 b.onclick=()=>{if(cfg[key]===i)return;cfg[key]=i;[...el.children].forEach((c,j)=>c.classList.toggle('sel',j===i));cb&&cb(i);};el.appendChild(b);});
 requestAnimationFrame(()=>items.forEach((it,i)=>it.d&&el.children[i]&&it.d(el.children[i].querySelector('canvas'),i)));}
 function seg(el,items,key,cb,ob){ob=ob||cfg;el.innerHTML='<span class="ind"></span>';items.forEach((it,i)=>{const b=document.createElement('button');b.className='sg'+(ob[key]===i?' sel':'');b.textContent=it;
