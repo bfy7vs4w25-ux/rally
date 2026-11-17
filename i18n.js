@@ -31,14 +31,16 @@ nLeft:['A barátod kilépett. Várakozás új játékosra…','Your friend left.
 pos:['Hely','Pos'],lap:['Kör','Lap'],lapTime:['Köridő','Lap time'],best:['Legjobb','Best'],total:['Összidő','Total'],draft:['Szélárnyék','Slipstream'],wrong:['Rossz irány!','Wrong way!'],
 backTrack:['Vissza a pályára: R','Back on track: R'],stuck:['Elakadtál? Nyomd meg az R gombot','Stuck? Press R'],leader:['Vezet','Leader'],racing:['versenyben','racing'],bestTag:['Legjobb','Best'],
 overtake:['Előzés! {p}. hely · +8% nitró','Overtake! P{p} · +8% nitro'],newBest:['Új legjobb kör · ','New best lap · '],lastLap:['Utolsó kör!','Final lap!'],go:['Rajt!','Go!'],finish:['Cél! {p}. hely','Finish! P{p}'],lowN:['Kevés a nitró','Low nitro'],
-camN:[['Hátsó kamera','Közeli kamera','Lökhárító kamera'],['Chase camera','Close camera','Bumper camera']],camS:[['Hátsó','Közeli','Lökhárító'],['Chase','Close','Bumper']],
+camN:[['Hátsó kamera','Közeli kamera','Lökhárító kamera','Pilóta kamera'],['Chase camera','Close camera','Bumper camera','Cockpit camera']],camS:[['Hátsó','Közeli','Lökhárító','Pilóta'],['Chase','Close','Bumper','Cockpit']],
 fsNo:['A teljes képernyő itt nem érhető el','Fullscreen is not available here'],fsDen:['A teljes képernyőt a böngésző nem engedte','The browser blocked fullscreen'],
 paused:['Szünet','Paused'],resume:['Folytatás','Resume'],restart:['Újrakezdés','Restart'],mainMenu:['Főmenü','Main menu'],backRoom:['Vissza a szobába','Back to room'],leaveRoom:['Kilépés a szobából','Leave room'],
 win:['Győzelem!','Victory!'],podium:['Dobogós helyezés!','Podium finish!'],good:['Szép futam!','Nice race!'],bestLap:['Legjobb kör','Best lap'],recordNew:['Pályacsúcs!','Track record!'],again:['Újra','Again'],hostCan:['A házigazda indíthat új futamot.','The host can start a new race.'],
 loading:['Pálya betöltése…','Loading track…'],wRain:['Esik az eső – csúszik az aszfalt','Rain – the tarmac is slippery'],wStorm:['Homokvihar – erős oldalszél','Sandstorm – strong crosswind'],wSnow:['Havas, csúszós pálya','Snowy, slippery track'],wWind:['Erős tengeri szél','Strong sea breeze'],
 lang:['Nyelv','Language'],units:['Mértékegység','Units'],volume:['Hangerő','Volume'],volOpts:[['Ki','Halk','Normál','Hangos'],['Off','Low','Normal','Loud']],defCam:['Alap kamera','Default camera'],
 steerS:['Kormányzás érzékenysége','Steering sensitivity'],steerOpts:[['Lágy','Normál','Gyors'],['Soft','Normal','Quick']],saved:['Beállítások mentve','Settings saved'],hostBadge:['házigazda','host'],
-paintL:['Fényezés','Paint'],hbShort:['Kézifék','Brake']};
+paintL:['Fényezés','Paint'],hbShort:['Kézifék','Brake'],sCustom:['Egyedi','Custom'],custom:['Testreszabás','Customize'],rimL:['Felni','Rims'],rimO:[['Alap','Króm','Fekete','Fehér','Arany'],['Default','Chrome','Black','White','Gold']],
+livL:['Csíkozás','Stripes'],livO:[['Alap','Nincs','Középcsík','Oldalcsík'],['Default','None','Center','Side']],spnL:['Szponzor matrica','Sponsor decal'],spnO:[['Alap','Nincs','Turbo','Nitro+','Ász','Rally 26'],['Default','None','Turbo','Nitro+','Ace','Rally 26']],
+numL:['Rajtszám','Race number'],tintL:['Ablakok','Windows'],tintO:[['Világos','Sötétített'],['Clear','Tinted']],customSub:['Felni, csíkok, szponzorok, rajtszám','Rims, stripes, sponsors, number']};
 function T(k,v){const e=DICT[k];if(!e)return k;let s=e[SET.lang==='en'?1:0];if(v)for(const q in v)s=s.replace('{'+q+'}',v[q]);return s;}
 const TA_=k=>DICT[k][SET.lang==='en'?1:0];
 const UN=()=>SET.unit?'mph':'km/h',SPD=kmh=>SET.unit?kmh*0.6214:kmh,LEN=u=>{const km=u*0.83/1000,v=SET.unit?km*0.6214:km;return(SET.lang==='en'?v.toFixed(1):v.toFixed(1).replace('.',','))+(SET.unit?' mi':' km');};

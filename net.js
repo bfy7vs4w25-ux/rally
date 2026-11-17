@@ -23,11 +23,11 @@ function setupConn(c){NET.conn=c;
 c.on('open',()=>{sendHello();if(NET.host)sendCfg();else{stepI=6;menuRender();}netStatus(NET.host?T('nHostOk'):T('nJoined'));lobbyUpd();});
 c.on('data',onMsg);c.on('close',netLost);c.on('error',netLost);}
 function send(m){try{if(NET.conn&&NET.conn.open)NET.conn.send(m);}catch(e){}}
-function sendHello(){send({t:'hello',car:cfg.c,col:cfg.k});}
+function sendHello(){send({t:'hello',car:cfg.c,col:cfg.k,num:cfg.num,opt:myOpt()});}
 function sendCfg(){if(NET.host)send({t:'cfg',c:{t:cfg.t,l:cfg.l,o:cfg.no,d:cfg.d}});}
 function lobbyUpd(){if(mode==='menu'&&stepI===6)menuRender(true);}
 function onMsg(m){if(!m||!m.t)return;
-if(m.t==='hello'){NET.remote={car:m.car,col:m.col};lobbyUpd();}
+if(m.t==='hello'){NET.remote={car:m.car,col:m.col,num:m.num||0,opt:m.opt||{}};lobbyUpd();}
 else if(m.t==='cfg'&&!NET.host){const ch=m.c.t!==builtT;cfg.t=m.c.t;cfg.l=m.c.l;cfg.no=m.c.o;cfg.d=m.c.d;if(ch&&mode==='menu')rebuild();lobbyUpd();}
 else if(m.t==='start'&&!NET.host){cfg.t=m.s.t;cfg.l=m.s.l;cfg.d=m.s.d;if(builtT!==m.s.t)buildTrack(m.s.t);startRace(m.s);}
 else if(m.t==='st'){const c=cars.find(c=>c.nid===m.id);if(c&&c.net)netApply(c,m);}
@@ -45,8 +45,8 @@ function netTick(dt){if(!NET.on||!NET.conn||!NET.conn.open||mode==='menu'||!pl)r
 if(NET.sendT>=50){NET.sendT=0;const m=pk(pl);m.t='st';send(m);}
 if(NET.host&&NET.aiT>=80){NET.aiT=0;send({t:'ai',l:cars.filter(c=>c.ai&&!c.human).map(pk)});}}
 function makeSpec(){const n=2+NOPP[cfg.no],rc=NET.remote||{car:0,col:1},hc=[COLS[cfg.k][1],COLS[rc.col][1]],ac=COLS.map(c=>c[1]).filter(c=>hc.indexOf(c)<0),list=[],mid=Math.max(0,Math.floor((n-2)/2));
-let ai=0;for(let k=0;k<n;k++){if(k===mid)list.push({id:'h',ty:cfg.c,col:hc[0],num:7,role:'h'});else if(k===mid+1)list.push({id:'g',ty:rc.car,col:hc[1],num:3,role:'g'});
-else{list.push({id:'a'+ai,ty:(ai*3+1)%4,col:ac[(ai*5+2)%ac.length],num:[11,23,4,88][ai%4],name:DRV[ai],role:'ai'});ai++;}}
+let ai=0;for(let k=0;k<n;k++){if(k===mid)list.push({id:'h',ty:cfg.c,col:hc[0],num:NUMS[cfg.num],role:'h',opt:myOpt()});else if(k===mid+1)list.push({id:'g',ty:rc.car,col:hc[1],num:NUMS[rc.num||0]===NUMS[cfg.num]?NUMS[(cfg.num+1)%6]:NUMS[rc.num||0],role:'g',opt:rc.opt||{}});
+else{list.push({id:'a'+ai,ty:(ai*3+1)%4,col:ac[(ai*5+2)%ac.length],num:[11,31,9,55][ai%4],name:DRV[ai],role:'ai',opt:aiOpt(ai)});ai++;}}
 return{t:cfg.t,l:cfg.l,d:cfg.d,w:pickWeather(TR[cfg.t].th),cars:list};}
 function hostStart(){if(!NET.host)return;if(!NET.conn||!NET.conn.open){toast(T('waitFriend'));return;}const s=makeSpec();send({t:'start',s});startRace(s);}
 function toLobby(remoteAsked){if(NET.host&&!remoteAsked)send({t:'lobby'});mode='menu';stepI=6;applyWeather(TR[builtT].th===2?'snow':'clear');newRace();show('menu');setHud(false);lamps(0);menuRender();}

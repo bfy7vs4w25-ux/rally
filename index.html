@@ -46,8 +46,10 @@ html,body{margin:0;height:100%;background:#0b0e14;overflow:hidden;font-family:In
 .dot{width:8px;height:8px;border-radius:50%;background:#ffb020;flex:none;animation:pulse 1.4s ease-in-out infinite}.dot.ok{background:#3ddc97;animation:none}.dot.bad{background:#ff5a5a;animation:none}
 @keyframes pulse{50%{opacity:.35}}
 .go.dis{filter:grayscale(1) brightness(.7);pointer-events:none;box-shadow:none}
-.seg{position:relative}.seg .ind{position:absolute;left:3px;top:3px;bottom:3px;border-radius:9px;background:#ff5a36;box-shadow:0 4px 14px rgba(255,90,54,0.35);transition:transform .35s cubic-bezier(.2,.8,.2,1),width .35s cubic-bezier(.2,.8,.2,1)}
-.sg{position:relative;z-index:1}.sg.sel{background:transparent;box-shadow:none}
+.seg .ind{display:none}
+.sg{position:relative;font-weight:500;transition:background .25s,color .25s,box-shadow .25s,transform .12s}.sg:active{transform:scale(.96)}
+.sg.sel{background:linear-gradient(180deg,#ff6a45,#e9461f);color:#fff;font-weight:600;box-shadow:0 3px 12px rgba(255,90,54,0.35),inset 0 1px 0 rgba(255,255,255,0.25);text-shadow:0 1px 1px rgba(0,0,0,0.25)}
+.sg:not(.sel):hover{background:rgba(255,255,255,0.09);color:#fff}
 .sl.done{background:rgba(61,220,151,0.5)}.sd b svg.i{width:12px;height:12px;stroke-width:3}
 .pt{font-size:18px;font-weight:600;line-height:1.3}
 #prev{opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s;pointer-events:none}#prev.on{opacity:1;transform:none}
@@ -67,8 +69,8 @@ button{font-family:inherit}
 .st{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mut);line-height:1.2}
 .st span{width:62px;flex:none}.st b{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.1);overflow:hidden;display:block}.st b i{display:block;height:100%;background:linear-gradient(90deg,#ff8a5c,var(--acc));border-radius:2px}
 .seg{display:flex;background:rgba(255,255,255,0.06);border-radius:12px;padding:3px;gap:3px}
-.sg{all:unset;box-sizing:border-box;flex:1;text-align:center;cursor:pointer;font-size:13px;padding:9px 4px;border-radius:9px;color:#c7ccd4;transition:background .18s,color .18s}
-.sg:hover{background:rgba(255,255,255,0.07)}.sg.sel{background:var(--acc);color:#fff;box-shadow:0 4px 14px rgba(255,90,54,0.35)}
+.sg{all:unset;box-sizing:border-box;flex:1;min-width:0;text-align:center;cursor:pointer;font-size:13px;padding:9px 6px;border-radius:9px;color:#c7ccd4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
+
 .go{all:unset;box-sizing:border-box;cursor:pointer;height:48px;padding:0 20px;border-radius:14px;background:linear-gradient(180deg,#ff6a45,#f04a26);color:#fff;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:filter .15s,transform .1s;box-shadow:0 6px 20px rgba(255,90,54,0.35)}
 .go:hover{filter:brightness(1.08)}.go:active{transform:scale(.98)}
 .gh{all:unset;box-sizing:border-box;cursor:pointer;height:48px;padding:0 18px;border-radius:14px;background:rgba(255,255,255,0.08);color:#e8eaee;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s}
@@ -122,6 +124,9 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 @keyframes nb{50%{filter:brightness(1.35)}}#nit.act .nb{animation:nb .35s infinite}
 .kc.mini{min-width:auto;height:18px;font-size:10px;padding:0 5px;border-bottom-width:2px}
 #load .logo{font-size:22px}
+.seg.wrap{flex-wrap:wrap}.seg.wrap .sg{flex:1 1 30%}
+.sw.sm{width:24px;height:24px}
+.co .nm,.co .sub{padding-right:2px}.co.sel .nm{padding-right:26px}
 @media (max-width:560px),(max-height:520px){.tb{width:54px;height:54px;border-radius:14px}}
 #dlt{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;padding:2px 7px;border-radius:6px;display:none}
 </style>
@@ -161,7 +166,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 </div>
 <div id="menu" class="ov on" style="display:block">
 <div class="pnl gl mp" id="mp">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:40px"><div class="logo"><i></i><span>3D rally</span><span class="ver">v1.3</span></div><div style="display:flex;gap:6px"><button class="ib" id="mex" aria-label="Teljes képernyő" data-i="max"></button><button class="ib" id="msb" aria-label="Hang" data-i="vol"></button></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:40px"><div class="logo"><i></i><span>3D rally</span><span class="ver">v1.4</span></div><div style="display:flex;gap:6px"><button class="ib" id="mex" aria-label="Teljes képernyő" data-i="max"></button><button class="ib" id="msb" aria-label="Hang" data-i="vol"></button></div></div>
 <div id="mst"></div>
 <div id="mb" style="display:flex;flex-direction:column;gap:13px;min-height:0"></div>
 <div class="mf" id="mf"></div>
@@ -182,18 +187,18 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 <div id="dW" class="sub" style="text-align:center;display:none" data-t="hostCan">A házigazda indíthat új futamot.</div><button class="go" id="dA" data-t="again">Újra</button>
 <button class="gh" id="dM" data-t="mainMenu">Főmenü</button>
 </div></div>
-<div id="load"><div class="logo"><i></i><span>3D rally</span><span class="ver">v1.3</span></div><div class="spin"></div><div id="loadT" data-t="loading">Pálya betöltése…</div></div>
+<div id="load"><div class="logo"><i></i><span>3D rally</span><span class="ver">v1.4</span></div><div class="spin"></div><div id="loadT" data-t="loading">Pálya betöltése…</div></div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="data.js?v=1.3"></script>
-<script src="i18n.js?v=1.3"></script>
-<script src="world.js?v=1.3"></script>
-<script src="weather.js?v=1.3"></script>
-<script src="car.js?v=1.3"></script>
-<script src="race.js?v=1.3"></script>
+<script src="data.js?v=1.4"></script>
+<script src="i18n.js?v=1.4"></script>
+<script src="world.js?v=1.4"></script>
+<script src="weather.js?v=1.4"></script>
+<script src="car.js?v=1.4"></script>
+<script src="race.js?v=1.4"></script>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="net.js?v=1.3"></script>
-<script src="ui.js?v=1.3"></script>
-<script src="loop.js?v=1.3"></script>
+<script src="net.js?v=1.4"></script>
+<script src="ui.js?v=1.4"></script>
+<script src="loop.js?v=1.4"></script>
 </body>
 </html>

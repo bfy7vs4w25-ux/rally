@@ -6,10 +6,10 @@ let dl=bi-c.idx;if(dl>NP/2)dl-=NP;if(dl<-NP/2)dl+=NP;c.prog+=dl;c.idx=bi;c.dist=
 function newRace(spec){
 cars.forEach(c=>{scene.remove(c.v3.g);c.v3.dis();});cars=[];finN=0;best=null;lapStart=0;gt=0;lastPos=9;skid.count=0;skidI=0;partsReset();
 let list;if(spec)list=spec.cars;else{const n=OPP[cfg.o]+1,ps=Math.min(n-1,Math.floor(n/2)),pc=COLS[cfg.k][1],ac=COLS.map(c=>c[1]).filter(c=>c!==pc);list=[];
-for(let k=0;k<n;k++)list.push(k===ps?{id:'p',ty:cfg.c,col:pc,num:7,role:'p'}:{id:'a'+k,ty:(k*3+cfg.c+1)%4,col:ac[(k*5+2)%ac.length],num:[11,23,4,88,16,31,9,55][k],name:DRV[k],role:'ai'});}
+for(let k=0;k<n;k++)list.push(k===ps?{id:'p',ty:cfg.c,col:pc,num:NUMS[cfg.num],role:'p',opt:myOpt()}:{id:'a'+k,ty:(k*3+cfg.c+1)%4,col:ac[(k*5+2)%ac.length],num:[11,23,4,88,16,31,9,55][k],name:DRV[k],role:'ai',opt:aiOpt(k)});}
 const me=spec?(NET.host?'h':'g'):'p';
 list.forEach((e,k)=>{const isP=e.role===me,human=e.role!=='ai',net=!!spec&&!isP&&(human||!NET.host),side=k%2?-1:1,idx=gridIdx(k),p=P[idx],t=TA[idx];
-const v3=makeCar(e.ty,e.col,e.num,HELM[k%8]);scene.add(v3.g);
+const v3=makeCar(e.ty,e.col,e.num,HELM[k%8],e.opt);scene.add(v3.g);
 const c={v3,st:CARS[e.ty],ty:e.ty,nid:e.id,human,net,ai:!isP&&!net,pl:isP,x:p.x+t.z*side*4.5,z:p.z-t.x*side*4.5,a:Math.atan2(t.x,t.z),vx:0,vz:0,v:0,sv:0,slip:0,brk:false,hb:false,on:true,kerb:false,draft:0,
 idx,prog:idx-NP,ld:-1,dist:0,lat:0,lost:0,avoid:0,skill:[0.86,0.93,0.99][cfg.d]-Math.random()*0.03,react:200+Math.random()*450,err:Math.random()*6,fin:0,ft:0,
 name:isP?T('you'):human?T('friend'):e.name,hex:'#'+new THREE.Color(e.col).getHexString(),skx:0,skz:0,stuck:0,px:0,pz:0,pa:0,rx:0,rz:0,ra:0,tx:0,tz:0,ta:0,hasNet:false,nit:50,boost:false,yr:0,wt:0,gear:1,shiftT:0,rpm:0.2,spin:0};
@@ -33,7 +33,7 @@ if(i.down>0){if(vf>0.02){const b=st.brk*(0.78+0.35*Math.min(1,vf))*i.down*(offr?
 if(i.up<=0&&i.down<=0){vf*=Math.pow(0.9935,d);wt=0.2;}
 vf*=Math.pow(offr?1-0.018*WX.drag:0.9988,d);if(vf>mx)vf=Math.max(mx,vf-(offr?0.03:0.01)*d);
 c.wt+=(wt-c.wt)*Math.min(1,0.12*d);
-let grip=st.grip*sf2*(c.boost?0.94:1)*(1+(st.df||0)*vf*vf),rearK=1;
+let grip=st.grip*sf2*(c.boost?0.94:1)*(1-0.2*Math.min(1,(i.down||0)*Math.max(0,vf-0.3)*2))*(1+(st.df||0)*vf*vf),rearK=1;
 if(st.rwd&&i.up>0.6&&vf>0.1&&vf<st.max*0.75)rearK-=0.24*st.rwd*i.up*Math.abs(c.sv)*(1-vf/st.max)*(c.ai?0.45:1);
 rearK*=1-0.1*Math.max(0,-c.wt);
 let yawT=vf*c.sv*(0.5/(1+spd*4.2))/2.6*(1+0.3*c.wt);
@@ -90,8 +90,8 @@ if(sk){if(Math.random()<Math.min(1,0.35+c.slip*6)*d)emit(rx,rz,[0.86,0.86,0.89],
 else{c.skx=c.x;c.skz=c.z;}}}}
 function visuals(al,d,TM){for(const c of cars){c.rx=c.px+(c.x-c.px)*al;c.rz=c.pz+(c.z-c.pz)*al;c.ra=c.pa+wrap(c.a-c.pa)*al;const v=c.v3;v.g.position.set(c.rx,0,c.rz);v.g.rotation.y=c.ra;
 const k=1-Math.exp(-d*0.25);v.fr.forEach(p=>p.rotation.y+=(c.sv*0.45/(1+Math.abs(c.v)*1.5)-p.rotation.y)*Math.min(1,k*2));const sp=c.v*d/c.st.wh.r;v.wh.forEach(w=>w.rotation.x+=sp);
-const roll=c.sv*Math.min(1,Math.abs(c.v))*0.04+(c.slip*Math.sign(c.sv)*0.15),pitch=c.wt*0.026;
-v.inn.rotation.z+=(roll-v.inn.rotation.z)*k;v.inn.rotation.x+=(pitch-v.inn.rotation.x)*k;v.inn.position.y=c.kerb&&Math.abs(c.v)>0.2?0.02+Math.sin(TM*0.09+c.x)*0.018:0;
+const roll=Math.max(-0.07,Math.min(0.07,c.yr*Math.abs(c.v)*1.7+c.slip*Math.sign(c.sv)*0.12)),pitch=c.wt*0.03,dd=Math.min(2,d);
+c.rv=(c.rv||0)+((roll-v.inn.rotation.z)*0.16-(c.rv||0)*0.3)*dd;v.inn.rotation.z+=c.rv*dd;c.pv=(c.pv||0)+((pitch-v.inn.rotation.x)*0.16-(c.pv||0)*0.3)*dd;v.inn.rotation.x+=c.pv*dd;if(v.sw)v.sw.rotation.z+=(-c.sv*1.7-v.sw.rotation.z)*Math.min(1,0.4*dd);v.inn.position.y=c.kerb&&Math.abs(c.v)>0.2?0.02+Math.sin(TM*0.09+c.x)*0.018:0;
 v.tail.color.setHex(c.brk||c.hb?0xff2020:0x5a0a0a);for(let j=0;j<v.fl.length;j++){const f=v.fl[j];f.visible=c.boost;if(c.boost){const k2=0.75+Math.random()*0.5;f.scale.set(1,1,j%2?k2*0.9:k2*1.2);}}}}
 const rk=c=>c.fin?1e12-c.ft:c.prog;
 const standings=()=>[...cars].sort((a,b)=>rk(b)-rk(a));
@@ -130,3 +130,7 @@ const wrong=mode==='race'&&Math.abs(pl.v)>0.12&&(Math.sin(pl.a)*TA[pl.idx].x+Mat
 $('ww').style.display=wrong?'flex':'none';const off=mode==='race'&&!wrong&&pl.dist>HW+11,stk=mode==='race'&&gt>6000&&Math.abs(pl.v)<0.03&&keys.up;$('msg').style.display=off||stk?'flex':'none';if(off||stk)$('msg').textContent=off?T('backTrack'):T('stuck');
 $('pDraft').style.display=pl.draft&&mode==='race'?'flex':'none';nitroHud();
 const kmh=Math.abs(pl.v)*180;speedo(kmh,pl.v<-0.02?'R':pl.gear,pl.rpm);mini();return{rpm:pl.rpm};}
+
+const NUMS=[7,23,44,88,1,13];
+function myOpt(){return{rim:cfg.rimI-1,liv:cfg.livI-1,spn:cfg.spnI?cfg.spnI-1:undefined,tint:cfg.tint};}
+function aiOpt(k){return{rim:(k*7)%5-1,liv:k%3,spn:(k%4)+1,tint:k%2};}

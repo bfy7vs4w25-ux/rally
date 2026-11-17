@@ -1,5 +1,5 @@
 const touch='ontouchstart'in window||navigator.maxTouchPoints>0;
-cfg.no=1;cfg.q=SET.q;
+cfg.no=1;cfg.q=SET.q;cfg.rimI=0;cfg.livI=0;cfg.spnI=0;cfg.num=0;cfg.tint=0;
 function setHud(on){$('tp').style.display=on&&touch?'flex':'none';['hTL','tower','mm','sp','nit'].forEach(k=>$(k).style.display=on?'block':'none');$('hBtns').style.display=on?'flex':'none';if(touch){const sp=$('sp'),nt=$('nit');sp.style.right='auto';sp.style.left='50%';sp.style.transform='translateX(-50%)';sp.style.bottom='6px';nt.style.right='auto';nt.style.left='50%';nt.style.transform='translateX(-50%)';nt.style.bottom='192px';nt.style.width='170px';}
 if(on&&touch&&G.clientHeight<600)$('tower').style.display='none';if(!on)['ww','msg','lt','pDraft'].forEach(k=>$(k).style.display='none');}
 function show(id){['menu','pause','done'].forEach(k=>$(k).classList.toggle('on',k===id));$('vig').classList.toggle('on',id==='menu');if(id==='pause')pauseBtns();if(id==='done')doneBtns();}
@@ -16,10 +16,10 @@ function isFS(){return!!(document.fullscreenElement||document.webkitFullscreenEl
 function toggleFS(){try{if(isFS())(document.exitFullscreen||document.webkitExitFullscreen).call(document);else{const r=(G.requestFullscreen||G.webkitRequestFullscreen);if(r){const p=r.call(G);if(p&&p.catch)p.catch(()=>toast(T('fsDen')));}else toast(T('fsNo'));}}catch(e){toast(T('fsNo'));}}
 function fsIcons(){['eb','mex'].forEach(id=>$(id).innerHTML=svg(isFS()?'min':'max'));}
 document.addEventListener('fullscreenchange',fsIcons);document.addEventListener('webkitfullscreenchange',fsIcons);
-function nextCam(){camMode=(camMode+1)%3;toast(TA_('camN')[camMode]);}
+function nextCam(){camMode=(camMode+1)%4;toast(TA_('camN')[camMode]);}
 
 let stepI=0,prevStep=0,carBack=1;
-function stepper(){const lb=[T('sTrack'),T('sCar'),T('sRace')];return'<div class="stp">'+lb.map((l,i)=>{const n=i+1,cl=n===stepI?'on':n<stepI?'ok':'';return(i?'<span class="sl'+(n<=stepI?' done':'')+'"></span>':'')+'<span class="sd '+cl+'"><b>'+(n<stepI?svg('check'):n)+'</b><span>'+l+'</span></span>';}).join('')+'</div>';}
+function stepper(){const lb=[T('sTrack'),T('sCar'),T('sCustom'),T('sRace')],ord=[1,2,9,3],cur=ord.indexOf(stepI);return'<div class="stp">'+lb.map((l,i)=>{const n=i+1,cl=i===cur?'on':i<cur?'ok':'';return(i?'<span class="sl'+(i<=cur?' done':'')+'"></span>':'')+'<span class="sd '+cl+'"><b>'+(i<cur?svg('check'):n)+'</b><span>'+l+'</span></span>';}).join('')+'</div>';}
 function go(n){stepI=n;menuRender();}
 function foot(bl,bs,gl,gs,gid){$('mf').innerHTML='<button class="gh" id="fb">'+svg('arrL')+'<span>'+bl+'</span></button>'+(gl?'<button class="go" id="'+(gid||'fg')+'" style="flex:1">'+gl+'</button>':'');
 $('fb').onclick=typeof bs==='function'?bs:()=>go(bs);if(gl&&typeof gs!=='undefined')$(gid||'fg').onclick=typeof gs==='function'?gs:()=>go(gs);}
@@ -44,7 +44,7 @@ poly(d.cab,'#2b3a4a');poly(d.body,col);
 for(const q of[[d.wh.f,d.wh.r],[d.wh.b,d.wh.rr]]){x.fillStyle='#151515';x.beginPath();x.arc(X(q[0]),Y(q[1]),q[1]*sc,0,7);x.fill();x.fillStyle=d.rim==='white'?'#f2f2f2':d.rim==='dark'?'#4a4f57':'#c9ced6';x.beginPath();x.arc(X(q[0]),Y(q[1]),q[1]*sc*0.58,0,7);x.fill();}}
 const nv=(v,a,b)=>0.25+0.75*(v-a)/(b-a);
 function prev(){const e=$('prev'),sh=mode==='menu'&&stepI>0&&stepI!==4&&stepI!==5&&stepI!==7&&stepI!==8&&G.clientWidth>=760;e.classList.toggle('on',sh);if(!sh)return;
-if(stepI===2){const d=CARS[cfg.c];e.innerHTML='<div class="pt">'+carN(cfg.c)+'</div><div class="sub">'+TA_('tags')[cfg.c]+' · '+colN(cfg.k)+'</div><div class="sub" style="margin-top:4px">'+T('topSpeed')+' '+Math.round(SPD(d.max*180))+' '+UN()+'</div>';}
+if(stepI===2||stepI===9){const d=CARS[cfg.c];e.innerHTML='<div class="pt">'+carN(cfg.c)+'</div><div class="sub">'+TA_('tags')[cfg.c]+' · '+colN(cfg.k)+'</div><div class="sub" style="margin-top:4px">'+T('topSpeed')+' '+Math.round(SPD(d.max*180))+' '+UN()+'</div>';}
 else{const t=TR[cfg.t],rc=REC[cfg.t];e.innerHTML='<div class="pt">'+trN(cfg.t)+'</div><div class="sub" style="margin-top:2px"><span style="color:'+t.dc+'">'+TA_('tDif')[cfg.t]+'</span> · '+LEN(t.len)+'</div><div class="sub">'+TA_('tNote')[cfg.t]+'</div><div class="sub">'+T('record')+': '+(rc===undefined?T('none'):fmt(rc))+'</div>';}}
 const dotC=c=>'<span class="cdot" style="background:#'+new THREE.Color(c).getHexString()+'"></span>';
 function sumHTML(){const t=TR[cfg.t],d=CARS[cfg.c],row=(k,v)=>'<div class="kr"><span class="sub" style="font-size:12px">'+k+'</span><span class="kv">'+v+'</span></div>';
@@ -52,7 +52,7 @@ return row(T('sTrack'),trN(cfg.t))+row(T('sCar'),dotC(COLS[cfg.k][1])+carN(cfg.c
 const HM=(id,ic,t,s,pri)=>'<button class="hm'+(pri?' pri':'')+'" id="'+id+'"><span class="ic">'+svg(ic)+'</span><span class="hmt"><span class="nm" style="font-size:14px">'+t+'</span><span class="sub">'+s+'</span></span>'+svg('arrR')+'</button>';
 
 function menuRender(quiet){const mb=$('mb'),fw=stepI>=prevStep;prevStep=stepI;
-const flow=stepI>=1&&stepI<=3&&carBack!==6;$('mst').innerHTML=flow?stepper():'';$('mst').style.display=flow?'block':'none';
+const flow=(stepI>=1&&stepI<=3||stepI===9)&&carBack!==6;$('mst').innerHTML=flow?stepper():'';$('mst').style.display=flow?'block':'none';
 
 if(stepI===0){carBack=1;mb.innerHTML='<div style="margin:2px 0 4px"><div class="hero">'+T('hero')+'</div><div class="sub" style="font-size:13px;margin-top:8px">'+T('heroSub')+'</div></div>'+
 HM('h1','flag',T('race'),T('raceSub'),1)+HM('h4','users',T('online'),T('onlineSub'))+HM('h2','bolt',T('quick'),trN(cfg.t)+' · '+carN(cfg.c))+HM('h5','gear',T('settings'),T('settingsSub'))+HM('h3','key',T('controls'),T('controlsSub'));
@@ -64,10 +64,14 @@ else if(stepI===2){mb.innerHTML='<div class="mt">'+T('pickCar')+'</div><div clas
 cards($('oC'),CARS.map((c,i)=>({a:carN(i),h:'<canvas class="cv2"></canvas><div><div class="nm">'+carN(i)+'</div><div class="sub">'+TA_('tags')[i]+'</div></div>'+bar(T('stTop'),nv(c.max,1.1,1.38))+bar(T('stAcc'),nv(c.acc,0.014,0.021))+bar(T('stGrip'),nv(c.grip,0.0145,0.019))+bar(T('stOff'),nv(c.off,0.4,0.78)),d:drawCar})),'c',()=>{carChanged();});
 const ok=$('oK');COLS.forEach((cc,i)=>{const b=document.createElement('button');b.className='sw'+(cfg.k===i?' sel':'');b.style.background='#'+new THREE.Color(cc[1]).getHexString();b.setAttribute('aria-label',colN(i));
 b.onclick=()=>{cfg.k=i;[...ok.children].forEach((e,j)=>e.classList.toggle('sel',j===i));$('cnm').textContent=colN(i);[...$('oC').children].forEach((e,j)=>drawCar(e.querySelector('canvas'),j));carChanged();};ok.appendChild(b);});
-if(carBack===6)foot(T('back'),6,'<span>'+T('done')+'</span>'+svg('check'),6);else foot(T('back'),1,'<span>'+T('next')+'</span>'+svg('arrR'),3);}
+foot(T('back'),carBack===6?6:1,'<span>'+T('next')+'</span>'+svg('arrR'),9);}
+else if(stepI===9){const S2=(k,id,wr)=>'<div><div class="sec">'+T(k)+'</div><div class="seg'+(wr?' wrap':'')+'" id="'+id+'"></div></div>';
+mb.innerHTML='<div class="mt">'+T('custom')+'</div>'+S2('rimL','cR',1)+S2('livL','cL')+S2('spnL','cS',1)+S2('numL','cN')+S2('tintL','cT');const ch=()=>carChanged();
+seg($('cR'),TA_('rimO'),'rimI',ch);seg($('cL'),TA_('livO'),'livI',ch);seg($('cS'),TA_('spnO'),'spnI',ch);seg($('cN'),NUMS.map(String),'num',ch);seg($('cT'),TA_('tintO'),'tint',ch);
+if(carBack===6)foot(T('back'),2,'<span>'+T('done')+'</span>'+svg('check'),6);else foot(T('back'),2,'<span>'+T('next')+'</span>'+svg('arrR'),3);}
 else if(stepI===3){const S2=(k,id)=>'<div><div class="sec">'+T(k)+'</div><div class="seg" id="'+id+'"></div></div>';mb.innerHTML='<div class="mt">'+T('raceSet')+'</div>'+S2('opp','oO')+S2('laps','oL')+S2('skill','oD')+S2('weather','oW')+'<div id="sum" class="box"></div>';
 const up=()=>{$('sum').innerHTML=sumHTML();};seg($('oO'),OPP.map(String),'o',()=>{newRace();up();});seg($('oL'),LAPS.map(String),'l',up);seg($('oD'),TA_('dif'),'d');seg($('oW'),TA_('wOpts'),'w',saveSet,SET);up();
-foot(T('back'),2,svg('flag')+'<span>'+T('start')+'</span>',()=>startRace());}
+foot(T('back'),9,svg('flag')+'<span>'+T('start')+'</span>',()=>startRace());}
 else if(stepI===4){const K2=(a,t)=>'<div class="kr"><span>'+t+'</span><span style="display:flex;gap:4px">'+a.map(k=>'<span class="kc">'+k+'</span>').join('')+'</span></div>';
 mb.innerHTML='<div class="mt">'+T('controls')+'</div><div>'+K2(['W','↑'],T('gas'))+K2(['S','↓'],T('brake'))+K2(['A','D'],T('steer'))+K2(['Space'],T('hb'))+K2(['Shift','N'],T('nitro'))+K2(['C'],T('cam'))+K2(['F'],T('fs'))+K2(['R'],T('reset'))+K2(['P','Esc'],T('pause'))+K2(['M'],T('sound'))+'</div><div class="sub" style="font-size:12px">'+T('helpTip')+'</div>';
 foot(T('back'),0);}
@@ -107,7 +111,7 @@ const KM={ShiftLeft:'n',ShiftRight:'n',KeyN:'n',ArrowUp:'up',KeyW:'up',ArrowDown
 addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;const k=KM[e.code];if(k){keys[k]=1;e.preventDefault();}
 if(e.code==='Escape'||e.code==='KeyP'){if(mode==='race')pause();else if(mode==='pause'&&performance.now()-fsExit>400)resume();}
 if(e.code==='KeyR'&&mode==='race')respawn(pl);if(e.code==='KeyM')setSnd(!snd);if(e.code==='KeyC'&&mode!=='menu')nextCam();if(e.code==='KeyF')toggleFS();
-if(e.code==='Enter'&&mode==='menu'){e.preventDefault();if(stepI===3)startRace();else if((stepI===1||stepI===2)&&carBack!==6)go(stepI+1);}});
+if(e.code==='Enter'&&mode==='menu'){e.preventDefault();if(stepI===3)startRace();else if(stepI===1)go(2);else if(stepI===2)go(9);else if(stepI===9&&carBack!==6)go(3);}});
 addEventListener('keyup',e=>{const k=KM[e.code];if(k)keys[k]=0;});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=0;});
 document.querySelectorAll('[data-k]').forEach(b=>{const k=b.dataset.k;b.addEventListener('pointerdown',e=>{e.preventDefault();keys[k]=1;b.classList.add('on');});['pointerup','pointerleave','pointercancel'].forEach(t=>b.addEventListener(t,()=>{keys[k]=0;b.classList.remove('on');}));});

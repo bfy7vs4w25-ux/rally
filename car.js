@@ -2,13 +2,14 @@ function shapeG(pts,w,bev,smooth){const s=new THREE.Shape();if(smooth){s.moveTo(
 const g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:bev>0,bevelThickness:bev,bevelSize:bev,bevelSegments:4,curveSegments:24});g.translate(0,0,-d/2);g.rotateY(-Math.PI/2);return K(g);}
 const CGC=[];
 function cgeo(ty){if(CGC[ty])return CGC[ty];const d=CARS[ty];return CGC[ty]={body:shapeG(d.body,d.w,0.07,1),cab:shapeG(d.cab,d.cw,0.05),fin:d.ex==='proto'?shapeG([[-0.7,0.98],[-2.35,1.2],[-2.38,0.8],[-1.4,0.7]],0.08,0):null};}
+const SWG={ring:K(new THREE.TorusGeometry(0.16,0.022,8,26))};
 const WG={bdisc:K(new THREE.CylinderGeometry(0.52,0.52,0.05,22)),tire:K(new THREE.TorusGeometry(0.8,0.24,14,32)),barrel:K(new THREE.CylinderGeometry(0.62,0.62,0.7,20,1,true)),disc:K(new THREE.CylinderGeometry(0.6,0.6,0.04,16)),spk:K(new THREE.BoxGeometry(0.07,1.2,0.14)),hub:K(new THREE.CylinderGeometry(0.15,0.15,0.12,10)),cal:K(new THREE.BoxGeometry(0.2,0.45,0.6))};
 const DS=THREE.DoubleSide;
-const CM={discM:S(0x8d9299,0.9,0.32),grille:S(0x0b0b0d,0.4,0.55),drl:new THREE.MeshBasicMaterial({color:0xeaf4ff}),tire:S(0x141414,0,0.85),rim:S(0xc4cad2,0.9,0.22,{side:DS}),rimD:S(0x24272c,0.7,0.3,{side:DS}),rimW:S(0xf2f2f2,0.3,0.35,{side:DS}),glass:S(0x0a0f15,0.9,0.05,{transparent:true,opacity:0.8}),
+const CM={rimG:S(0xd2a54a,0.95,0.22,{side:THREE.DoubleSide}),glassL:S(0x1a2a38,0.6,0.04,{transparent:true,opacity:0.42}),visor:S(0x0d1218,0.95,0.04),int:S(0x1b1c20,0.15,0.75),seat:S(0x26282d,0.1,0.8),glove:S(0x222222,0.1,0.7),discM:S(0x8d9299,0.9,0.32),grille:S(0x0b0b0d,0.4,0.55),drl:new THREE.MeshBasicMaterial({color:0xeaf4ff}),tire:S(0x141414,0,0.85),rim:S(0xc4cad2,0.9,0.22,{side:DS}),rimD:S(0x24272c,0.7,0.3,{side:DS}),rimW:S(0xf2f2f2,0.3,0.35,{side:DS}),glass:S(0x0a0f15,0.9,0.05,{transparent:true,opacity:0.8}),
 trim:S(0x15171b,0.3,0.55),chrome:S(0xeeeeee,1,0.1),head:new THREE.MeshBasicMaterial({color:0xfff7df}),lens:S(0xfff4cc,0.1,0.1,{emissive:0x9a8030}),cal:S(0xd62828,0.3,0.4),
 blob:new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:0.25,depthWrite:false})};
 function numTex(n){return ctex(128,128,x=>{x.fillStyle='#fff';x.beginPath();x.arc(64,64,58,0,7);x.fill();x.fillStyle='#111';x.font='bold 74px Inter,sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(String(n),64,70);});}
-function wheel(s,st){const w=new THREE.Group(),rm=st==='white'?CM.rimW:st==='dark'?CM.rimD:CM.rim;
+function wheel(s,st){const w=new THREE.Group(),rm=st==='white'?CM.rimW:st==='dark'?CM.rimD:st==='gold'?CM.rimG:CM.rim;
 const t=new THREE.Mesh(WG.tire,CM.tire);t.rotation.y=Math.PI/2;t.scale.set(1,1,1.5);w.add(t);
 const b=new THREE.Mesh(WG.barrel,rm);b.rotation.z=Math.PI/2;w.add(b);
 const bk=new THREE.Mesh(WG.disc,CM.trim);bk.rotation.z=Math.PI/2;bk.position.x=-s*0.1;w.add(bk);
@@ -16,18 +17,35 @@ for(let j=0;j<5;j++){const k=new THREE.Mesh(WG.spk,rm);k.position.x=s*0.3;k.rota
 const h=new THREE.Mesh(WG.hub,CM.chrome);h.rotation.z=Math.PI/2;h.position.x=s*0.33;w.add(h);
 const dk=new THREE.Mesh(WG.bdisc,CM.discM);dk.rotation.z=Math.PI/2;dk.position.x=s*0.1;w.add(dk);
 w.userData.geos=mergeGroup(w);return w;}
-function makeCar(ty,col,num,helm){const d=CARS[ty],cg=cgeo(ty),g=new THREE.Group(),inn=new THREE.Group();g.add(inn);
+function makeCar(ty,col,num,helm,opt){opt=opt||{};const d=CARS[ty],cg=cgeo(ty),g=new THREE.Group(),inn=new THREE.Group();g.add(inn);
 const paint=new THREE.MeshPhysicalMaterial({color:col,metalness:0.45,roughness:0.28,clearcoat:1,clearcoatRoughness:0.05});
 const hs={};new THREE.Color(col).getHSL(hs);const acc=S(hs.l>0.6?0x17191d:0xf4f4f4,0.2,0.35);
 const tail=new THREE.MeshBasicMaterial({color:0x5a0a0a}),nm=new THREE.MeshStandardMaterial({map:numTex(num),transparent:true,roughness:0.35,metalness:0.1}),hm=S(helm,0.3,0.25);
 const M=(geo,mat,x,y,z,sx,sy,sz,rx,ry,rz)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);if(sx!==undefined)m.scale.set(sx,sy,sz);m.rotation.set(rx||0,ry||0,rz||0);m.castShadow=true;inn.add(m);return m;};
 const B=(mat,sx,sy,sz,x,y,z,rx)=>M(GEO.box,mat,x,y,z,sx,sy,sz,rx);
 const seg=(mat,p1,p2,x,w,th,lift)=>{const dz=p2[0]-p1[0],dy=p2[1]-p1[1];B(mat,w,th,Math.hypot(dz,dy),x,(p1[1]+p2[1])/2+lift,(p1[0]+p2[0])/2,-Math.atan2(dy,dz));};
-M(cg.body,paint,0,0,0);M(cg.cab,CM.glass,0,0,0);if(cg.fin)M(cg.fin,paint,0,0,0);
+M(cg.body,paint,0,0,0);M(cg.cab,opt.tint?CM.glass:CM.glassL,0,0,0);if(cg.fin)M(cg.fin,paint,0,0,0);
 const z0=d.body[0][0],z1=d.body[1][0];B(CM.trim,d.w-0.14,0.1,z1-z0-0.3,0,d.body[0][1]+0.02,(z0+z1)/2);
 if(d.ex!=='proto')seg(paint,d.cab[1],d.cab[2],0,d.cw-0.16,0.05,0.07);
-if(d.ex==='gt'||d.ex==='muscle')for(const x of[-0.24,0.24])seg(acc,d.cab[1],d.cab[2],x,0.22,0.02,0.11);
-M(GEO.helm,hm,d.ex==='proto'?0:0.3,(d.cab[1][1]+d.cab[0][1])/2-0.12,(d.cab[1][0]+d.cab[2][0])/2-0.15);
+const liv=(opt.liv===undefined||opt.liv<0)?(d.ex==='gt'||d.ex==='muscle'?1:d.ex==='rally'?2:0):opt.liv;
+if(liv===1)for(const x of[-0.24,0.24]){seg(acc,d.cab[1],d.cab[2],x,0.22,0.02,0.11);seg(acc,d.body[3],d.cab[0],x,0.22,0.02,0.1);seg(acc,d.cab[3],d.body[d.rt],x,0.22,0.02,0.1);seg(acc,d.body[2],d.body[3],x,0.22,0.02,0.09);}
+if(liv===2)for(const s of[-1,1]){B(acc,0.02,0.16,(d.body[1][0]-d.body[0][0])*0.82,s*(d.w/2+0.009),d.body[0][1]+0.2,0);B(acc,0.02,0.05,(d.body[1][0]-d.body[0][0])*0.82,s*(d.w/2+0.009),d.body[0][1]+0.32,0);}
+const hx=d.ex==='proto'?0:0.3,hy=(d.cab[1][1]+d.cab[0][1])/2-0.12,hz=(d.cab[1][0]+d.cab[2][0])/2-0.15,yb0=d.body[0][1],ys=Math.max(yb0+0.1,hy-0.52),zs=hz-0.02;
+M(GEO.helm,hm,hx,hy,hz);B(CM.visor,0.25,0.075,0.06,hx,hy+0.005,hz+0.16);
+const suit=S(new THREE.Color(helm).lerp(new THREE.Color(0x222222),0.35).getHex(),0.1,0.6);
+B(CM.int,d.cw-0.12,0.04,Math.max(0.6,d.cab[0][0]-d.cab[3][0]),0,yb0+0.1,(d.cab[0][0]+d.cab[3][0])/2);
+B(CM.int,d.cw-0.08,0.14,0.32,0,d.cab[0][1]-0.03,d.cab[0][0]-0.26);
+for(const sx of(d.ex==='proto'?[0]:[0.3,-0.3])){B(CM.seat,0.44,0.1,0.46,sx,ys,zs);B(CM.seat,0.44,0.6,0.09,sx,ys+0.33,zs-0.25,-0.16);B(CM.seat,0.08,0.22,0.42,sx+0.2,ys+0.14,zs);B(CM.seat,0.08,0.22,0.42,sx-0.2,ys+0.14,zs);}
+M(GEO.cyl,suit,hx,ys+0.3,zs-0.04,0.17,0.42,0.13,-0.12,0,0);M(GEO.ball,suit,hx,ys+0.5,zs-0.06,0.22,0.09,0.13);
+B(suit,0.3,0.13,0.5,hx,ys+0.1,zs+0.32);B(suit,0.28,0.38,0.12,hx,ys-0.06,zs+0.6,0.2);
+const sy=ys+0.44,sz=zs+0.5,sgp=new THREE.Group();sgp.position.set(hx,sy,sz);sgp.rotation.x=-0.42;sgp.userData.dyn=1;inn.add(sgp);
+const ring=new THREE.Group();sgp.add(ring);const rm_=new THREE.Mesh(SWG.ring,CM.int);ring.add(rm_);
+for(const a of[0,2.1,-2.1]){const sp=new THREE.Mesh(GEO.box,CM.int);sp.scale.set(0.02,0.15,0.02);sp.position.set(Math.sin(a)*0.075,-Math.cos(a)*0.075,0);sp.rotation.z=a;ring.add(sp);}
+const hb=new THREE.Mesh(GEO.cyl,CM.int);hb.scale.set(0.045,0.04,0.045);hb.rotation.x=Math.PI/2;ring.add(hb);
+for(const s of[-1,1]){const gl=new THREE.Mesh(GEO.ball,CM.glove);gl.scale.setScalar(0.045);gl.position.set(s*0.15,0.02,0.02);ring.add(gl);
+const fa=new THREE.Mesh(GEO.cyl,suit);fa.scale.set(0.045,0.26,0.045);fa.position.set(s*0.17,-0.04,-0.12);fa.rotation.x=1.25;ring.add(fa);}
+for(const s of[-1,1])M(GEO.cyl,suit,hx+s*0.19,ys+0.42,zs+0.12,0.05,0.32,0.05,1.0,0,-s*0.15);
+const SW=ring;
 for(const s of[-1,1]){B(CM.head,0.42,0.13,0.1,s*(d.w/2-0.36),d.hl[1],d.hl[0]+0.04);B(tail,0.46,0.12,0.1,s*(d.w/2-0.34),d.tl[1],d.tl[0]-0.04);
 if(d.ex!=='proto')B(paint,0.2,0.12,0.13,s*(d.cw/2+0.13),d.cab[0][1]+0.14,d.cab[0][0]-0.25);
 const dc=M(GEO.vplane,nm,s*(d.w/2+0.006),d.ny,-0.15,d.ns,d.ns,1,0,s*Math.PI/2,0);dc.castShadow=false;}
@@ -48,16 +66,16 @@ const bz=(d.cab[1][0]+d.cab[2][0])/2-0.1,bh=Math.max(0.2,d.cab[1][1]-bl);B(T,0.0
 const zs1=d.cab[0][0]-0.05,zs2=(d.cab[2][0]+d.cab[3][0])/2,yb=d.body[0][1];
 for(const s of[-1,1]){const xs=s*(d.w/2+0.005);B(T,0.008,0.42,0.025,xs,yb+0.34,zs1);B(T,0.008,0.42,0.025,xs,yb+0.34,zs2);B(CM.chrome,0.02,0.035,0.16,s*(d.w/2+0.012),bl-0.14,zs2+0.25);
 B(T,0.06,0.08,(z1-z0)*0.55,s*(d.w/2+0.01),yb+0.06,(z0+z1)/2);B(CM.drl,0.36,0.025,0.05,s*(d.w/2-0.36),d.hl[1]-0.085,d.hl[0]+0.06);
-if(d.ex!=='muscle'){const sp=M(GEO.vplane,SPM[(num+(s>0?0:1))%SPM.length],s*(d.w/2+0.007),d.ny+(d.ex==='proto'?0.02:-0.06),z0+0.95,1.05,0.27,1,0,s*Math.PI/2,0);sp.castShadow=false;}}
+if(d.ex!=='muscle'){const spk=opt.spn===undefined?(num+(s>0?0:1))%SPM.length:opt.spn-1;if(spk>=0){const sp=M(GEO.vplane,SPM[spk],s*(d.w/2+0.007),d.ny+(d.ex==='proto'?0.02:-0.06),z0+0.95,1.05,0.27,1,0,s*Math.PI/2,0);sp.castShadow=false;}}}
 B(CM.grille,d.w*0.48,0.13,0.05,0,d.hl[1]-0.1,d.hl[0]+0.02);B(CM.grille,d.w*0.6,0.09,0.05,0,d.body[0][1]+0.12,d.body[1][0]+0.05);
 if(d.ex!=='proto')for(const x of[-0.3,0.3]){const wp=B(T,0.5,0.015,0.03,x,d.cab[0][1]+0.05,d.cab[0][0]-0.1);wp.rotation.y=x>0?0.12:-0.12;}
 if(d.ex==='rally')M(GEO.cyl,T,0.42,d.cab[2][1]+0.3,d.cab[2][0]+0.25,0.012,0.6,0.012);}
 const wh=[],fr=[],Wd=d.wh;
-for(const q of[[-1,Wd.f,1],[1,Wd.f,1],[-1,Wd.b,0],[1,Wd.b,0]]){const s=q[0],r=q[2]?Wd.r:Wd.rr,pv=new THREE.Group();pv.position.set(s*Wd.x,r,q[1]);const w=wheel(s,d.rim);w.scale.setScalar(r);pv.add(w);{const fe=new THREE.Mesh(FEND,paint);fe.rotation.y=Math.PI/2;fe.scale.set(r*1.18,r*1.18,r*0.9);fe.position.set(q[0]*Wd.x+s*0.04,r,q[1]);fe.castShadow=true;inn.add(fe);}
+for(const q of[[-1,Wd.f,1],[1,Wd.f,1],[-1,Wd.b,0],[1,Wd.b,0]]){const s=q[0],r=q[2]?Wd.r:Wd.rr,pv=new THREE.Group();pv.position.set(s*Wd.x,r,q[1]);const w=wheel(s,opt.rim===undefined||opt.rim<0?d.rim:['chrome','dark','white','gold'][opt.rim]);w.scale.setScalar(r);pv.add(w);{const fe=new THREE.Mesh(FEND,paint);fe.rotation.y=Math.PI/2;fe.scale.set(r*1.18,r*1.18,r*0.9);fe.position.set(q[0]*Wd.x+s*0.04,r,q[1]);fe.castShadow=true;inn.add(fe);}
 const cl=new THREE.Mesh(WG.cal,CM.cal);cl.scale.setScalar(r);cl.position.set(s*0.05*r,r*0.4,r*0.25);pv.add(cl);g.add(pv);wh.push(w);if(q[2])fr.push(pv);}
 const bl=new THREE.Mesh(GEO.plane,CM.blob);bl.scale.set(d.w+0.5,1,z1-z0+0.5);bl.position.y=0.17;g.add(bl);
 const mg=mergeGroup(inn);
-return{g,inn,wh,fr,tail,paint,fl,dis(){[paint,acc,tail,hm].forEach(m=>m.dispose());nm.map.dispose();nm.dispose();mg.forEach(x=>x.dispose());wh.forEach(w=>(w.userData.geos||[]).forEach(x=>x.dispose()));}};}
+return{g,inn,wh,fr,tail,paint,fl,sw:SW,hx,hy,hz,dis(){[paint,acc,tail,hm,suit].forEach(m=>m.dispose());nm.map.dispose();nm.dispose();mg.forEach(x=>x.dispose());wh.forEach(w=>(w.userData.geos||[]).forEach(x=>x.dispose()));}};}
 
 const PN=1400,pPos=new Float32Array(PN*3).fill(-9999),pCol=new Float32Array(PN*3),pSz=new Float32Array(PN),pAl=new Float32Array(PN),pVel=new Float32Array(PN*3),pLife=new Float32Array(PN),pMax=new Float32Array(PN),pS0=new Float32Array(PN),pG=new Float32Array(PN),pA0=new Float32Array(PN);let pI=0;
 const pGeo=new THREE.BufferGeometry();pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));pGeo.setAttribute('color',new THREE.BufferAttribute(pCol,3));pGeo.setAttribute('size',new THREE.BufferAttribute(pSz,1));pGeo.setAttribute('alpha',new THREE.BufferAttribute(pAl,1));

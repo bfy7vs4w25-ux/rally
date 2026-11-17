@@ -28,7 +28,7 @@ if(type==='wind')WX.wind=0.45;
 setSky(top,hor,gr);makeEnv();scene.background=new THREE.Color(hor);scene.fog.color.setHex(hor);scene.fog.near=fn;scene.fog.far=ff;sun.intensity=sunI;hemi.intensity=hemI;hemi.color.setHex(hor);
 sunS.visible=type==='clear'||type==='wind';rain.visible=rip.visible=type==='rain';if(PUDM){PUDM.visible=type==='rain';PUDMAT.opacity=0;}sand.visible=type==='storm';
 if(ROADM){ROADM.roughness=type==='rain'?0.28:0.92;ROADM.metalness=type==='rain'?0.15:0;ROADM.color.setHex(type==='rain'?0x9a9a9a:0xffffff);}
-if(CLOUD)CLOUD.children.forEach(g=>g.children.forEach(m=>{m.material.color.setHex(type==='rain'?0x8c939c:type==='storm'?0xc79a68:0xffffff);m.material.opacity=type==='rain'?0.95:0.8;}));
+if(CLOUD){const ms=new Set();CLOUD.children.forEach(g=>g.children.forEach(m=>ms.add(m.material)));ms.forEach(mt=>{mt.color.setHex(mt.userData.base||0xffffff);if(type==='rain')mt.color.multiplyScalar(0.62);if(type==='storm')mt.color.lerp(new THREE.Color(0xc79a68),0.7);if(type==='snow')mt.color.multiplyScalar(0.88);mt.opacity=type==='rain'?0.96:0.85;});}
 if(SNOW)SNOW.visible=true;VP=CARS.map(speedProfile);}
 function wxStep(dt,d,TM){const cx=cam.position.x,cy=cam.position.y,cz=cam.position.z;
 WX.gust=WX.wind*(0.55+0.45*Math.sin(TM*0.0011)+0.3*Math.sin(TM*0.0037+1.3));WX.wdir+=Math.sin(TM*0.0002)*0.0004*d;
