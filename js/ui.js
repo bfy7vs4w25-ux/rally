@@ -1,7 +1,7 @@
 const touch='ontouchstart'in window||navigator.maxTouchPoints>0;
 cfg.no=1;
-function setHud(on){$('tp').style.display=on&&touch?'flex':'none';['hTL','tower','mm','sp'].forEach(k=>$(k).style.display=on?'block':'none');$('hBtns').style.display=on?'flex':'none';$('sp').style.bottom=touch?'100px':'12px';
-if(!on)['ww','msg','lt','pDraft'].forEach(k=>$(k).style.display='none');}
+function setHud(on){$('tp').style.display=on&&touch?'flex':'none';['hTL','tower','mm','sp','nit'].forEach(k=>$(k).style.display=on?'block':'none');$('hBtns').style.display=on?'flex':'none';if(touch){const sp=$('sp'),nt=$('nit');sp.style.right='auto';sp.style.left='50%';sp.style.transform='translateX(-50%)';sp.style.bottom='6px';nt.style.right='auto';nt.style.left='50%';nt.style.transform='translateX(-50%)';nt.style.bottom='192px';nt.style.width='170px';}
+if(on&&touch&&G.clientHeight<600)$('tower').style.display='none';if(!on)['ww','msg','lt','pDraft'].forEach(k=>$(k).style.display='none');}
 function show(id){['menu','pause','done'].forEach(k=>$(k).classList.toggle('on',k===id));$('vig').classList.toggle('on',id==='menu');if(id==='pause')pauseBtns();if(id==='done')doneBtns();}
 function startRace(spec){if(!spec||!spec.cars)spec=null;if(NET.on&&!spec)return;ain();newRace(spec);camYaw=pl.a;camDist=11;acc=0;mode='count';cdE=0;lastLit=-1;lamps(0);show(null);setHud(true);$('lt').style.display='flex';cv.focus();}
 function toMenu(){if(NET.on)netReset();mode='menu';stepI=0;newRace();show('menu');setHud(false);lamps(0);menuRender();}
@@ -54,8 +54,8 @@ const HM=(id,ic,t,s,pri)=>'<button class="hm'+(pri?' pri':'')+'" id="'+id+'"><sp
 const TSH=['Erdő','Tenger','Sivatag','Hó'];
 function menuRender(quiet){const mb=$('mb'),fw=stepI>=prevStep;prevStep=stepI;
 const flow=stepI>=1&&stepI<=3&&carBack!==6;$('mst').innerHTML=flow?stepper():'';$('mst').style.display=flow?'block':'none';
-if(!quiet){mb.classList.remove('sf','sb');void mb.offsetWidth;mb.classList.add(fw?'sf':'sb');}
-if(stepI===0){carBack=1;mb.innerHTML='<div style="margin:2px 0 4px"><div class="hero">Készen állsz<br>a rajtra?</div><div class="sub" style="font-size:13px;margin-top:8px">Négy pálya, négy autó, okos ellenfelek.</div></div>'+
+
+if(stepI===0){carBack=1;mb.innerHTML='<div style="margin:2px 0 4px"><div class="hero">Készen állsz<br>a rajtra?</div><div class="sub" style="font-size:13px;margin-top:8px">Négy pálya, négy autó, okos ellenfelek és nitró.</div></div>'+
 HM('h1','flag','Verseny','Pálya, autó és beállítások',1)+HM('h4','users','Online játék','Verseny egy barátod ellen')+HM('h2','bolt','Gyors verseny',TR[cfg.t].name+' · '+CARS[cfg.c].name)+HM('h3','key','Irányítás','Billentyűk és vezetési tippek');
 $('mf').innerHTML='';$('h1').onclick=()=>go(1);$('h2').onclick=()=>startRace();$('h3').onclick=()=>go(4);$('h4').onclick=()=>go(5);}
 else if(stepI===1){mb.innerHTML='<div class="mt">Válassz pályát</div><div class="g2" id="oT"></div>';
@@ -70,7 +70,7 @@ else if(stepI===3){mb.innerHTML='<div class="mt">Verseny beállítások</div><di
 const up=()=>{$('sum').innerHTML=sumHTML();};seg($('oO'),OPP.map(String),'o',()=>{newRace();up();});seg($('oL'),LAPS.map(String),'l',up);seg($('oD'),DIF,'d');seg($('oQ'),QL,'q',()=>{applyQ();rebuild();});up();
 foot('Vissza',2,svg('flag')+'<span>Rajt</span>',()=>startRace());}
 else if(stepI===4){const K2=(a,t)=>'<div class="kr"><span>'+t+'</span><span style="display:flex;gap:4px">'+a.map(k=>'<span class="kc">'+k+'</span>').join('')+'</span></div>';
-mb.innerHTML='<div class="mt">Irányítás</div><div>'+K2(['W','↑'],'Gáz')+K2(['S','↓'],'Fék, tolatás')+K2(['A','D'],'Kormányzás')+K2(['Space'],'Kézifék, driftelés')+K2(['C'],'Kameranézet')+K2(['F'],'Teljes képernyő')+K2(['R'],'Vissza a pályára')+K2(['P','Esc'],'Szünet')+K2(['M'],'Hang')+'</div><div class="sub" style="font-size:12px">Kanyar előtt fékezz, a kanyarban adagold a gázt. Egy autó mögött a szélárnyék gyorsít, a kerékcsúszás lassít.</div>';
+mb.innerHTML='<div class="mt">Irányítás</div><div>'+K2(['W','↑'],'Gáz')+K2(['S','↓'],'Fék, tolatás')+K2(['A','D'],'Kormányzás')+K2(['Space'],'Kézifék, driftelés')+K2(['Shift','N'],'Nitró')+K2(['C'],'Kameranézet')+K2(['F'],'Teljes képernyő')+K2(['R'],'Vissza a pályára')+K2(['P','Esc'],'Szünet')+K2(['M'],'Hang')+'</div><div class="sub" style="font-size:12px">A nitró driftből, szélárnyékból és előzésből töltődik, legalább 12% kell az indításához. Kanyarban kevésbé tapad, egyenesben használd.</div>';
 foot('Vissza',0);}
 else if(stepI===5){mb.innerHTML='<div class="mt">Online játék</div><div class="sub" style="font-size:13px">Egyikőtök létrehoz egy szobát, a másik a kapott kóddal csatlakozik.</div>'+HM('o1','plus','Szoba létrehozása','Te leszel a házigazda',1)+HM('o2','login','Csatlakozás kóddal','A barátod szobájához')+
 '<div class="box sub" style="font-size:12px">A kapcsolat közvetlenül a két böngésző között jön létre. '+NOTE+'</div>';
@@ -79,6 +79,7 @@ else if(stepI===7){mb.innerHTML='<div class="mt">Csatlakozás</div><div class="s
 const jc=$('jc');jc.oninput=()=>{jc.value=jc.value.toUpperCase().replace(/[^A-Z0-9]/g,'');};jc.onkeydown=e=>{e.stopPropagation();if(e.key==='Enter')joinRoom(jc.value);};setTimeout(()=>jc.focus(),50);
 foot('Vissza',()=>{netReset();go(5);},svg('login')+'<span>Csatlakozás</span>',()=>joinRoom(jc.value));}
 else if(stepI===6){lobbyHTML();}
+if(!quiet){mb.classList.remove('sf','sb');void mb.offsetWidth;mb.classList.add(fw?'sf':'sb');[...mb.children].forEach((e,i)=>{e.classList.remove('it');void e.offsetWidth;e.classList.add('it');e.style.animationDelay=(60+i*50)+'ms';});[...$('mf').children].forEach(e=>{e.classList.remove('it');void e.offsetWidth;e.classList.add('it');e.style.animationDelay='200ms';});}
 prev();fitMenu();}
 function lobbyHTML(){const mb=$('mb'),con=NET.conn&&NET.conn.open,r=NET.remote,me=CARS[cfg.c];
 const pr=(nm,car,col,tag,btn)=>'<div class="prow">'+(car!==null?dotC(col):'<span class="cdot wait"></span>')+'<span class="pn"><span class="nm">'+nm+'</span><span class="sub">'+tag+'</span></span>'+(btn||'')+'</div>';
@@ -95,7 +96,7 @@ const g=$('lgo');if(g){g.classList.toggle('dis',NET.host?!con:true);}}
 function carChanged(){newRace();prev();if(NET.on)sendHello();}
 function fitMenu(){const mp=$('mp');if(!mp)return;mp.style.height='auto';mp.style.transform='translateY(-50%)';const nat=mp.scrollHeight,av=G.clientHeight-32,H=Math.max(nat,Math.min(600,av));mp.style.height=H+'px';const s=Math.min(1,av/H);mp.style.transform='translateY(-50%) scale('+s+')';}
 
-const KM={ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'hb'};
+const KM={ShiftLeft:'n',ShiftRight:'n',KeyN:'n',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'hb'};
 addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;const k=KM[e.code];if(k){keys[k]=1;e.preventDefault();}
 if(e.code==='Escape'||e.code==='KeyP'){if(mode==='race')pause();else if(mode==='pause'&&performance.now()-fsExit>400)resume();}
 if(e.code==='KeyR'&&mode==='race')respawn(pl);if(e.code==='KeyM')setSnd(!snd);if(e.code==='KeyC'&&mode!=='menu')nextCam();if(e.code==='KeyF')toggleFS();
@@ -108,3 +109,8 @@ $('eb').onclick=$('mex').onclick=toggleFS;$('sb').onclick=$('msb').onclick=()=>s
 ['pR','pA','pM','dA','dM'].forEach(id=>{const b=$(id),t=b.textContent;b.innerHTML=svg({pR:'play',pA:'redo',pM:'home',dA:'redo',dM:'home'}[id])+'<span>'+t+'</span>';});
 function rs(){const w=G.clientWidth,h=G.clientHeight;ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();if(mode==='menu'){prev();fitMenu();document.querySelectorAll('.seg').forEach(s=>segInd(s,false));}}
 new ResizeObserver(rs).observe(G);addEventListener('resize',rs);
+
+let nitLow=0;
+function nitroHud(){const n=pl.nit,e=$('nit');$('nitF').style.width=n.toFixed(1)+'%';$('nitV').textContent=Math.floor(n)+'%';e.classList.toggle('act',pl.boost);e.classList.toggle('rdy',!pl.boost&&n>=12);e.classList.toggle('low',n<12);
+if(keys.n&&!pl.boost&&n<12&&mode==='race'&&performance.now()-nitLow>1800){nitLow=performance.now();toast('Kevés a nitró','#ff8a6b');}}
+function flashPos(){const e=$('hP');e.classList.remove('flash');void e.offsetWidth;e.classList.add('flash');}

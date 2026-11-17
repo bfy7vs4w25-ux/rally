@@ -30,7 +30,7 @@ const dt=ctex(256,256,(x,w,h)=>{x.fillStyle='#e6e6e6';x.fillRect(0,0,w,h);blobs(
 const m=new THREE.Mesh(g,TM(new THREE.MeshLambertMaterial({vertexColors:true,map:dt})));m.receiveShadow=true;trackG.add(m);}
 
 let builtT=-1,P=[],TA=[],CU=[],CUR=[],INS=[],RL=[],VP=[],NP=0,MB,CX=0,CZ=0,RAD=200,TH0=TH[0],seaZ=1e9;
-let trackG=new THREE.Group(),OB=new Map(),SL=[],CROWD=[],FLAGS=[],GL=[],CLOUD=null,SNOW=null;
+let WATER=null,trackG=new THREE.Group(),OB=new Map(),SL=[],CROWD=[],FLAGS=[],GL=[],CLOUD=null,SNOW=null;
 const okey=(x,z)=>Math.floor(x/8)+','+Math.floor(z/8);
 function addOb(x,z,r){const k=okey(x,z);let a=OB.get(k);if(!a)OB.set(k,a=[]);a.push([x,z,r]);}
 function obEach(x,z,f){const cx=Math.floor(x/8),cz=Math.floor(z/8);for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){const a=OB.get((cx+i)+','+(cz+j));if(a)for(const o of a)if(f(o))return true;}return false;}
@@ -56,15 +56,25 @@ function gridIdx(k){return(NP*2-7-Math.floor(k/2)*8-(k%2?4:0))%NP;}
 function speedProfile(d){const v=new Float32Array(NP);for(let k=0;k<NP;k++){const r=18/Math.max(0.002,CU[k])*1.15;v[k]=Math.min(d.max,Math.sqrt(d.grip*r));}
 for(let it=0;it<2;it++)for(let k=NP-1;k>=0;k--){const n=v[(k+1)%NP];v[k]=Math.min(v[k],Math.sqrt(n*n+2*d.brk*0.8*1.5));}return v;}
 
-function stand(k,s,len){const g=SIDE(k,s),X0=HW+15.5,fan=[];
-for(let i=0;i<6;i++){LB(g,MAT.conc,2.2,(i+1)*0.85,len,X0+i*2.2,(i+1)*0.425,0);for(let z=-len/2+0.7;z<=len/2-0.7;z+=0.8)if(Math.random()<0.82)fan.push([X0+i*2.2+(Math.random()-0.5)*0.6,(i+1)*0.85+0.38,z+(Math.random()-0.5)*0.2,Math.random()*6.28]);}
-LB(g,MAT.post,0.4,9,len,X0+13.6,4.5,0);const rf=LB(g,MAT.roof,16,0.35,len+2,X0+6.5,9.6,0);rf.rotation.z=0.06;
-for(const z of[-len/2,0,len/2])LB(g,MAT.post,0.35,9.4,0.35,X0+13.2,4.7,z);
-LB(g,MAT.red,0.25,1,len,X0-1.6,0.5,0);
-const b=inst(GEO.body,MAT.inst,fan.map(f=>[f[0],f[1],f[2]]),false,fan.map(()=>PAL[Math.floor(Math.random()*PAL.length)]),g);
-const h=inst(GEO.head,MAT.inst,fan.map(f=>[f[0],f[1]+0.55,f[2]]),false,fan.map(()=>SKIN[Math.floor(Math.random()*SKIN.length)]),g);
-if(b)CROWD.push({b,h,l:fan});
-for(const z of[-len/2-2.5,len/2+2.5]){LB(g,MAT.post,0.6,22,0.6,X0+12,11,z);LB(g,MAT.lampW,0.5,1.8,3.2,X0+11.4,21.5,z,1);}}
+function addCrowd(par,list,standing){if(!list.length)return;const Qd=cfg.q?1:0.7,L2=list.filter(()=>Math.random()<Qd);
+const tc=L2.map(()=>PAL[Math.floor(Math.random()*PAL.length)]),hc=L2.map(()=>SKIN[Math.floor(Math.random()*SKIN.length)]),P3=L2.map(q=>[q[0],q[1],q[2],0,q[3]||0,0]);
+inst(PG.torso,CMAT,P3,false,tc,par);inst(PG.head,CMAT,P3,false,hc,par);
+const am=[],ac=[];L2.forEach((q,i)=>{if(Math.random()<0.38){am.push(P3[i]);ac.push(hc[i]);}});inst(PG.arms,CMAT,am,false,ac,par);
+if(standing)inst(PG.legs,CMAT,P3,false,L2.map(()=>[new THREE.Color(0x2b3550),new THREE.Color(0x3a3a3a),new THREE.Color(0x6b5a45),new THREE.Color(0x1e2a3a)][Math.floor(Math.random()*4)]),par);}
+function stand(k,s,len){const g=SIDE(k,s),X0=HW+15.5,fan=[],seatC=[0x1b6ee8,0xd7263d,0xf2b705][Math.floor(Math.random()*3)];
+for(let i=0;i<7;i++){const x=X0+i*2.1,y=(i+1)*0.8;LB(g,MAT.conc,2.1,y,len,x,y/2,0);LB(g,TM(L(seatC)),0.5,0.36,len,x+0.55,y+0.18,0,1);
+for(let z=-len/2+0.5;z<=len/2-0.5;z+=0.62)if(Math.random()<0.93)fan.push([x+0.35+(Math.random()-0.5)*0.15,y+0.18,z+(Math.random()-0.5)*0.12,(Math.random()-0.5)*0.4-Math.PI/2]);}
+LB(g,MAT.post,0.4,10,len,X0+15.2,5,0);const rf=LB(g,MAT.roof,17,0.35,len+2,X0+7,10.4,0);rf.rotation.z=0.06;
+for(const z of[-len/2,-len/6,len/6,len/2])LB(g,MAT.post,0.35,10.2,0.35,X0+14.8,5.1,z);
+LB(g,MAT.red,0.25,1,len,X0-1.6,0.5,0);for(let z=-len/2;z<=len/2;z+=len/4)LB(g,ADS[Math.floor(Math.random()*6)],0.06,0.8,len/4-0.3,X0-1.75,0.55,z,1);
+addCrowd(g,fan,false);
+for(const z of[-len/2-2.5,len/2+2.5]){LB(g,MAT.post,0.6,24,0.6,X0+13,12,z);LB(g,MAT.lampW,0.5,1.8,3.4,X0+12.4,23.5,z,1);}}
+function zone(k,s,len){const g=SIDE(k,s),fan=[];
+for(let r=0;r<5;r++){const x=HW+15.2+r*1.05;for(let z=-len/2;z<=len/2;z+=0.7)if(Math.random()<0.78-r*0.08)fan.push([x+(Math.random()-0.5)*0.4,0.82+r*0.18,z+(Math.random()-0.5)*0.3,-Math.PI/2+(Math.random()-0.5)*0.6]);}
+for(let r=1;r<5;r++)LB(g,MAT.conc,1.05,r*0.18+0.02,len+1,HW+15.2+r*1.05,(r*0.18+0.02)/2,0,1);
+for(let z=-len/2-0.5;z<=len/2+0.5;z+=3){LB(g,MAT.post,0.12,2.6,0.12,HW+14.2,1.3,z);}
+for(const y of[1.1,2.5])LB(g,MAT.white,0.08,0.08,len+1,HW+14.2,y,0,1);
+addCrowd(g,fan,true);}
 function pits(k,s,len){const g=SIDE(k,s),X=HW+22;
 const b=new THREE.Mesh(GEO.box,[MAT.conc2,MAT.gar,MAT.roof,MAT.conc2,MAT.conc2,MAT.conc2]);b.scale.set(12,6,len);b.position.set(X,3,0);b.castShadow=b.receiveShadow=true;g.add(b);
 const up=new THREE.Mesh(GEO.box,[MAT.glassB,MAT.glassB,MAT.roof,MAT.conc2,MAT.conc2,MAT.conc2]);up.scale.set(10,2.8,len);up.position.set(X+1,7.4,0);up.castShadow=true;g.add(up);
@@ -74,7 +84,7 @@ const m=new THREE.Mesh(GEO.box,[MAT.post,MAT.post,MAT.post,MAT.post,MAT.big,MAT.
 
 function buildTrack(ti){
 scene.remove(trackG);trackG.traverse(o=>{if(o.geometry&&!o.geometry.userData.k)o.geometry.dispose();const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>{if(m.userData.tmp){if(m.map)m.map.dispose();m.dispose();}});});
-trackG=new THREE.Group();scene.add(trackG);OB=new Map();SL=[];CROWD=[];FLAGS=[];GL=[];SNOW=null;CLOUD=null;
+WATER=null;trackG=new THREE.Group();scene.add(trackG);OB=new Map();SL=[];CROWD=[];FLAGS=[];GL=[];SNOW=null;CLOUD=null;
 const t=TR[ti],th=TH[t.th];TH0=th;builtT=ti;
 setSky(th.sky[0],th.sky[1],th.sky[2]);makeEnv();scene.background=new THREE.Color(th.sky[1]);scene.fog=new THREE.Fog(th.sky[1],350,1750);
 sun.color.setHex(th.sun);hemi.color.setHex(th.sky[1]);hemi.groundColor.setHex(th.hg);
@@ -118,6 +128,8 @@ const cand=[...Array(NP).keys()].filter(k=>CU[k]>0.25&&Math.min(k,NP-k)>45).sort
 for(const k of cand){if(used.length>=2)break;if(used.some(u=>Math.min(Math.abs(u-k),NP-Math.abs(u-k))<NP/5))continue;const s=-INS[k];if(clear(k,s,HW+14,HW+30,-16,16)){stand(k,s,30);reserve(k,s,HW+14,HW+30,-16,16);used.push(k);}}
 let bs=-1,bl=0,cs=-1;for(let k=0;k<NP*2;k++){const kk=k%NP;if(!CUR[kk]){if(cs<0)cs=k;const l=k-cs;if(l>bl&&l<NP){const mid=Math.floor((cs+k)/2)%NP;if(Math.min(mid,NP-mid)>50){bl=l;bs=mid;}}}else cs=-1;}
 if(bs>=0&&clear(bs,1,HW+13.5,HW+16,-2,2)&&clear(bs,-1,HW+13.5,HW+16,-2,2)){bridge(bs);reserve(bs,1,0,1,-2,2);}
+let zc=0;for(const k of cand){if(zc>=6)break;if(used.some(u=>Math.min(Math.abs(u-k),NP-Math.abs(u-k))<NP/9))continue;const s=-INS[k];if(clear(k,s,HW+14,HW+21,-17,17)){zone(k,s,30);reserve(k,s,HW+14,HW+21,-17,17);used.push(k);zc++;}}
+for(let k=30;k<NP-30;k+=20){if(CUR[k]||used.some(u=>Math.min(Math.abs(u-k),NP-Math.abs(u-k))<45))continue;for(const s of[1,-1])if(clear(k,s,HW+14,HW+32,-16,16)){stand(k,s,30);reserve(k,s,HW+14,HW+32,-16,16);used.push(k);break;}if(used.length>9)break;}
 for(let k=NP/10|0;k<NP;k+=NP/7|0){const s=-INS[k];if(clear(k,s,HW+15,HW+18,-2,2)){const g=SIDE(k,s);LB(g,MAT.orange,1.8,2.4,1.8,HW+16.5,1.2,0);LB(g,MAT.roof,2.3,0.2,2.3,HW+16.5,2.5,0);reserve(k,s,HW+15,HW+18,-2,2);}}
 const fm=[MAT.chkD,TM(L(0xd7263d,{side:THREE.DoubleSide})),TM(L(0x1b6ee8,{side:THREE.DoubleSide})),TM(L(0xf2b705,{side:THREE.DoubleSide}))];
 for(const s of[-1,1])for(const lz of[-26,-32,26,32]){const w=W(0,s*(HW+14.2),lz);if(rd(w.x,w.z)<HW+13)continue;const g=new THREE.Group();g.position.set(w.x,0,w.z);
@@ -125,6 +137,9 @@ const po=new THREE.Mesh(GEO.pole,MAT.white);po.scale.y=8;g.add(po);const fl=new 
 vegetation(ti,t,th,WALL);
 const ld=$('load');ld.style.opacity=0;setTimeout(()=>{if(ld.style.opacity==='0')ld.style.display='none';},420);}
 
+const waterN=(()=>{const N=128,h=[];for(let y=0;y<N;y++)for(let x=0;x<N;x++){let v=0;for(let o=1;o<=4;o++){const f=o*2*Math.PI/N;v+=Math.sin(x*f*1.0+y*f*0.6+o)*Math.cos(y*f*1.3-x*f*0.4+o*2)/o;}h.push(v);}
+return ctex(N,N,(c)=>{const id=c.createImageData(N,N);for(let y=0;y<N;y++)for(let x=0;x<N;x++){const i=y*N+x,dx=h[y*N+(x+1)%N]-h[y*N+(x-1+N)%N],dy=h[((y+1)%N)*N+x]-h[((y-1+N)%N)*N+x];const nx=-dx*2,ny=-dy*2,nz=1,l=Math.hypot(nx,ny,nz);id.data[i*4]=(nx/l*0.5+0.5)*255;id.data[i*4+1]=(ny/l*0.5+0.5)*255;id.data[i*4+2]=(nz/l*0.5+0.5)*255;id.data[i*4+3]=255;}c.putImageData(id,0,0);},true);})();
+waterN.repeat.set(400,200);
 function vegetation(ti,t,th,WALL){
 let sd=ti*977+13;const r=()=>{sd=(sd*16807)%2147483647;return sd/2147483647;};const Q=cfg.q?1:0.55;
 const okP=(x,z,m)=>{if(z>seaZ-m)return false;for(const q of SL)if(Math.hypot(q[0]-x,q[1]-z)<q[2])return false;return true;};
@@ -159,7 +174,7 @@ inst(GEO.blob,MAT.snow,V.bank,false);inst(GEO.ball,TM(L(new THREE.Color(th.g[2])
 CLOUD=new THREE.Group();CLOUD.position.set(CX,0,CZ);const cm=TM(L(0xffffff,{emissive:0x8a8f99,transparent:true,opacity:0.92}));
 for(let n=0;n<18;n++){const g=new THREE.Group(),a=r()*6.28,d=250+r()*700;g.position.set(Math.sin(a)*d,260+r()*120,Math.cos(a)*d);for(let j=0;j<8;j++){const m=new THREE.Mesh(GEO.blob,cm),s=12+r()*16;m.scale.set(s*1.5,s*0.65,s);m.position.set((j-3.5)*14+r()*8,r()*8-(Math.abs(j-3.5)*1.5),r()*14);g.add(m);}CLOUD.add(g);}
 trackG.add(CLOUD);
-if(t.th===3){const w=new THREE.Mesh(GEO.plane,TM(S(0x1c6aa0,0.3,0.1)));w.scale.set(6000,1,3000);w.position.set(CX,0.08,seaZ+1460);trackG.add(w);
+if(t.th===3){const w=new THREE.Mesh(GEO.plane,TM(S(0x1c6aa0,0.3,0.12,{normalMap:waterN,normalScale:new THREE.Vector2(0.6,0.6)})));WATER=w;w.scale.set(6000,1,3000);w.position.set(CX,0.08,seaZ+1460);trackG.add(w);
 const st=ctex(128,64,(x,w_,h)=>{x.fillStyle='#e3d3a5';x.fillRect(0,0,w_,h);noise(x,w_,h,3000,0.15,2);},true);st.repeat.set(120,2);const b=new THREE.Mesh(GEO.plane,TM(L(0xffffff,{map:st})));b.scale.set(6000,1,80);b.position.set(CX,0.06,seaZ-30);b.receiveShadow=true;trackG.add(b);}
 if(t.th===2){const n=2000,ps=new Float32Array(n*3);for(let i=0;i<n;i++){ps[i*3]=(Math.random()-0.5)*140;ps[i*3+1]=Math.random()*50;ps[i*3+2]=(Math.random()-0.5)*140;}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(ps,3));
-SNOW=new THREE.Points(g,TM(new THREE.PointsMaterial({color:0xffffff,size:0.3,transparent:true,opacity:0.85,depthWrite:false})));SNOW.frustumCulled=false;trackG.add(SNOW);}}
+SNOW=new THREE.Points(g,TM(new THREE.PointsMaterial({color:0xffffff,size:0.32,map:softT,transparent:true,opacity:0.95,depthWrite:false})));SNOW.frustumCulled=false;trackG.add(SNOW);}}

@@ -36,11 +36,11 @@ else if(m.t==='lobby'&&!NET.host){if(mode!=='menu')toLobby(true);}}
 function netLost(){if(!NET.on||!NET.conn)return;NET.conn=null;NET.remote=null;
 if(mode!=='menu'){toast('A barátod kilépett','#ff8a6b');const r=cars.find(c=>c.net&&c.human);if(r){scene.remove(r.v3.g);r.v3.dis();cars.splice(cars.indexOf(r),1);}}
 if(NET.host)netStatus('A barátod kilépett. Várakozás új játékosra…',1);else netStatus('Megszakadt a kapcsolat a szobával.',1);lobbyUpd();}
-function netApply(c,m){c.tx=m.x;c.tz=m.z;c.ta=m.a;c.vx=m.vx;c.vz=m.vz;c.v=m.v;c.sv=m.sv;c.brk=!!m.b;c.hb=!!m.h;c.slip=m.sl||0;c.prog=m.p;c.ld=m.ld;
+function netApply(c,m){c.tx=m.x;c.tz=m.z;c.ta=m.a;c.vx=m.vx;c.vz=m.vz;c.v=m.v;c.sv=m.sv;c.brk=!!m.b;c.hb=!!m.h;c.slip=m.sl||0;c.prog=m.p;c.ld=m.ld;c.boost=!!m.n;
 if(m.f&&!c.fin){c.fin=1;c.ft=m.ft;}if(!c.hasNet){c.hasNet=true;c.x=c.tx;c.z=c.tz;c.a=c.ta;}}
 function netStep(c,d){if(!c.hasNet)return;c.tx+=c.vx*d;c.tz+=c.vz*d;c.x+=c.vx*d;c.z+=c.vz*d;const k=Math.min(1,0.12*d);c.x+=(c.tx-c.x)*k;c.z+=(c.tz-c.z)*k;c.a+=wrap(c.ta-c.a)*k;
 if(Math.hypot(c.tx-c.x,c.tz-c.z)>15){c.x=c.tx;c.z=c.tz;}const pg=c.prog;near(c);c.prog=pg;c.on=c.dist<HW+0.4;c.kerb=!c.on&&c.dist<HW+2.3&&CUR[c.idx];}
-const pk=c=>({id:c.nid,x:+c.x.toFixed(2),z:+c.z.toFixed(2),a:+c.a.toFixed(3),vx:+c.vx.toFixed(3),vz:+c.vz.toFixed(3),v:+c.v.toFixed(3),sv:+c.sv.toFixed(2),b:c.brk?1:0,h:c.hb?1:0,sl:+c.slip.toFixed(3),p:c.prog,ld:c.ld,f:c.fin?1:0,ft:c.ft});
+const pk=c=>({id:c.nid,x:+c.x.toFixed(2),z:+c.z.toFixed(2),a:+c.a.toFixed(3),vx:+c.vx.toFixed(3),vz:+c.vz.toFixed(3),v:+c.v.toFixed(3),sv:+c.sv.toFixed(2),b:c.brk?1:0,h:c.hb?1:0,sl:+c.slip.toFixed(3),p:c.prog,ld:c.ld,f:c.fin?1:0,ft:c.ft,n:c.boost?1:0});
 function netTick(dt){if(!NET.on||!NET.conn||!NET.conn.open||mode==='menu'||!pl)return;NET.sendT+=dt;NET.aiT+=dt;
 if(NET.sendT>=50){NET.sendT=0;const m=pk(pl);m.t='st';send(m);}
 if(NET.host&&NET.aiT>=80){NET.aiT=0;send({t:'ai',l:cars.filter(c=>c.ai&&!c.human).map(pk)});}}
