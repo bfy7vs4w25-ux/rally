@@ -1,4 +1,4 @@
-const SET={lang:'hu',unit:0,vol:2,cam:0,steer:1,q:1,w:0};
+const SET={lang:'hu',unit:0,vol:2,cam:0,steer:1,q:('ontouchstart'in window||navigator.maxTouchPoints>0)?0:1,w:0};
 try{const s=JSON.parse(localStorage.getItem('rally3d_set')||'null');if(s)Object.assign(SET,s);}catch(e){}
 function saveSet(){try{localStorage.setItem('rally3d_set',JSON.stringify(SET));}catch(e){}}
 const DICT={

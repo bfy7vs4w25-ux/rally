@@ -34,7 +34,7 @@ noise(x,w,h,22000,0.1,1.5);},true);dt.repeat.set(SZ/22,SZ/22);
 const m=new THREE.Mesh(g,TM(new THREE.MeshLambertMaterial({vertexColors:true,map:dt})));m.receiveShadow=true;trackG.add(m);}
 
 let builtT=-1,P=[],TA=[],CU=[],CUR=[],INS=[],RL=[],VP=[],NP=0,MB,CX=0,CZ=0,RAD=200,TH0=TH[0],seaZ=1e9;
-let ROADM=null,WATER=null,trackG=new THREE.Group(),OB=new Map(),SL=[],CROWD=[],FLAGS=[],GL=[],CLOUD=null,SNOW=null;
+let PUD=[],PUDI=new Map(),PUDM=null,ROADM=null,WATER=null,trackG=new THREE.Group(),OB=new Map(),SL=[],CROWD=[],FLAGS=[],GL=[],CLOUD=null,SNOW=null;
 const okey=(x,z)=>Math.floor(x/8)+','+Math.floor(z/8);
 function addOb(x,z,r){const k=okey(x,z);let a=OB.get(k);if(!a)OB.set(k,a=[]);a.push([x,z,r]);}
 function obEach(x,z,f){const cx=Math.floor(x/8),cz=Math.floor(z/8);for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){const a=OB.get((cx+i)+','+(cz+j));if(a)for(const o of a)if(f(o))return true;}return false;}
@@ -60,11 +60,21 @@ function gridIdx(k){return(NP*2-7-Math.floor(k/2)*8-(k%2?4:0))%NP;}
 function speedProfile(d){const v=new Float32Array(NP);for(let k=0;k<NP;k++){const r=18/Math.max(0.002,CU[k])*1.15;v[k]=Math.min(d.max,Math.sqrt(d.grip*(WX?WX.road:1)*(1+(d.df||0)*0.6)*r));}
 for(let it=0;it<2;it++)for(let k=NP-1;k>=0;k--){const n=v[(k+1)%NP];v[k]=Math.min(v[k],Math.sqrt(n*n+2*d.brk*0.8*1.5));}return v;}
 
-function addCrowd(par,list,standing){if(!list.length)return;const Qd=cfg.q?1:0.7,L2=list.filter(()=>Math.random()<Qd);
-const tc=L2.map(()=>PAL[Math.floor(Math.random()*PAL.length)]),hc=L2.map(()=>SKIN[Math.floor(Math.random()*SKIN.length)]),P3=L2.map(q=>[q[0],q[1],q[2],0,q[3]||0,0]);
-inst(PG.torso,CMAT,P3,false,tc,par);inst(PG.head,CMAT,P3,false,hc,par);const HC=[0x1d1712,0x3b2a1c,0x6b4a2b,0xc9a15f,0x8a8a8a,0x7a2e1a].map(c=>new THREE.Color(c));inst(PG.hair,CMAT,P3,false,L2.map(()=>Math.random()<0.18?PAL[Math.floor(Math.random()*PAL.length)]:HC[Math.floor(Math.random()*HC.length)]),par);if(!standing)inst(PG.sleg,CMAT,P3,false,L2.map(()=>[new THREE.Color(0x2b3550),new THREE.Color(0x333333),new THREE.Color(0x6b5a45),new THREE.Color(0x1e2a3a),new THREE.Color(0x5a6a7a)][Math.floor(Math.random()*5)]),par);
-const am=[],ac=[];L2.forEach((q,i)=>{if(Math.random()<0.38){am.push(P3[i]);ac.push(hc[i]);}});inst(PG.arms,CMAT,am,false,ac,par);
-if(standing)inst(PG.legs,CMAT,P3,false,L2.map(()=>[new THREE.Color(0x2b3550),new THREE.Color(0x3a3a3a),new THREE.Color(0x6b5a45),new THREE.Color(0x1e2a3a)][Math.floor(Math.random()*4)]),par);}
+const HCOL=[0x1d1712,0x2e2118,0x4a3322,0x6b4a2b,0xa87b44,0xd8b57a,0x8a8a8a,0x7a2e1a].map(c=>new THREE.Color(c)),PANT=[0x2b3550,0x333333,0x6b5a45,0x1e2a3a,0x5a6a7a,0x8a7a60,0x24262b].map(c=>new THREE.Color(c));
+function addCrowd(par,list,standing){if(!list.length)return;const Qd=cfg.q?1:0.6,L2=list.filter(()=>Math.random()<Qd),rc=a=>a[Math.floor(Math.random()*a.length)];
+const up=[],dn=[],upC=[],dnC=[],skU=[],skD=[],hr=[],hrC=[],cp=[],cpC=[],lg=[],lgC=[];
+for(const q of L2){const p=[q[0],q[1],q[2],0,q[3]||0,0],sh=Math.random()<0.15?rc(PAL):hsl(Math.random(),0.35+Math.random()*0.45,0.25+Math.random()*0.45),sk=rc(SKIN);
+if(Math.random()<0.33){up.push(p);upC.push(sh);skU.push(sk);}else{dn.push(p);dnC.push(sh);skD.push(sk);}
+if(Math.random()<0.2){cp.push(p);cpC.push(rc(PAL));}else{hr.push(p);hrC.push(rc(HCOL));}lg.push(p);lgC.push(rc(PANT));}
+inst(PG.shU,CMAT,up,false,upC,par);inst(PG.shD,CMAT,dn,false,dnC,par);inst(PG.skU,CMAT,up,false,skU,par);inst(PG.skD,CMAT,dn,false,skD,par);
+inst(PG.hair,CMAT,hr,false,hrC,par);inst(PG.cap,CMAT,cp,false,cpC,par);inst(standing?PG.legs:PG.sleg,CMAT,lg,false,lgC,par);}
+function billboard(k,s,ad){const g=SIDE(k,s),X=HW+22;for(const z of[-4.5,4.5])LB(g,MAT.post,0.35,7.5,0.35,X+0.3,3.75,z);
+const m=new THREE.Mesh(GEO.box,[MAT.post,BILLM[ad],MAT.post,MAT.post,MAT.post,MAT.post]);m.scale.set(0.3,3.6,12);m.position.set(X,6.2,0);m.castShadow=true;g.add(m);
+LB(g,MAT.white,0.4,0.18,12.4,X-0.05,8.1,0);LB(g,MAT.white,0.4,0.18,12.4,X-0.05,4.3,0);for(const z of[-3,0,3])LB(g,MAT.lampW,0.5,0.12,0.6,X-0.9,8.35,z,1);}
+function puddles(){const r=Math.random,list=[];PUD=[];PUDI=new Map();
+for(let n=0;n<Math.round(NP/9);n++){const k=Math.floor(r()*NP),lat=(r()<0.6?(r()<0.5?-1:1)*(HW-2-r()*3):(r()-0.5)*HW),p=P[k],t=TA[k],x=p.x+t.z*lat,z=p.z-t.x*lat,rad=1.2+r()*2.2;
+list.push([x,0.118,z,0,Math.atan2(t.x,t.z)+(r()-0.5)*0.6,0,rad*(1.3+r()*0.8),1,rad]);PUD.push([x,z,rad*1.1]);const q=PUD.length-1;for(let o=-3;o<=3;o++){const kk=(k+o+NP)%NP;let a=PUDI.get(kk);if(!a)PUDI.set(kk,a=[]);a.push(q);}}
+PUDM=inst(GEO.plane,PUDMAT,list,false);if(PUDM)PUDM.visible=false;}
 function stand(k,s,len){const g=SIDE(k,s),X0=HW+15.5,fan=[],seatC=[0x1b6ee8,0xd7263d,0xf2b705][Math.floor(Math.random()*3)];
 for(let i=0;i<7;i++){const x=X0+i*2.1,y=(i+1)*0.8;LB(g,MAT.conc,2.1,y,len,x,y/2,0);LB(g,TM(L(seatC)),0.5,0.36,len,x+0.55,y+0.18,0,1);
 for(let z=-len/2+0.5;z<=len/2-0.5;z+=0.62)if(Math.random()<0.93)fan.push([x+0.35+(Math.random()-0.5)*0.15,y+0.18,z+(Math.random()-0.5)*0.12,(Math.random()-0.5)*0.4-Math.PI/2]);}
@@ -135,6 +145,8 @@ if(bs>=0&&clear(bs,1,HW+13.5,HW+16,-2,2)&&clear(bs,-1,HW+13.5,HW+16,-2,2)){bridg
 let zc=0;for(const k of cand){if(zc>=6)break;if(used.some(u=>Math.min(Math.abs(u-k),NP-Math.abs(u-k))<NP/9))continue;const s=-INS[k];if(clear(k,s,HW+14,HW+21,-17,17)){zone(k,s,30);reserve(k,s,HW+14,HW+21,-17,17);used.push(k);zc++;}}
 for(let k=30;k<NP-30;k+=20){if(CUR[k]||used.some(u=>Math.min(Math.abs(u-k),NP-Math.abs(u-k))<45))continue;for(const s of[1,-1])if(clear(k,s,HW+14,HW+32,-16,16)){stand(k,s,30);reserve(k,s,HW+14,HW+32,-16,16);used.push(k);break;}if(used.length>9)break;}
 for(let k=NP/10|0;k<NP;k+=NP/7|0){const s=-INS[k];if(clear(k,s,HW+15,HW+18,-2,2)){const g=SIDE(k,s);LB(g,MAT.orange,1.8,2.4,1.8,HW+16.5,1.2,0);LB(g,MAT.roof,2.3,0.2,2.3,HW+16.5,2.5,0);reserve(k,s,HW+15,HW+18,-2,2);}}
+{let bc=0;for(let k=Math.floor(NP*0.07);k<NP&&bc<8;k+=Math.floor(NP/11)){if(CUR[k])continue;const s=-INS[k]||1;for(const ss of[s,-s])if(clear(k,ss,HW+20,HW+24,-7,7)){billboard(k,ss,bc%6);reserve(k,ss,HW+20,HW+24,-7,7);bc++;break;}}}
+puddles();
 const fm=[MAT.chkD,TM(L(0xd7263d,{side:THREE.DoubleSide})),TM(L(0x1b6ee8,{side:THREE.DoubleSide})),TM(L(0xf2b705,{side:THREE.DoubleSide}))];
 for(const s of[-1,1])for(const lz of[-26,-32,26,32]){const w=W(0,s*(HW+14.2),lz);if(rd(w.x,w.z)<HW+13)continue;const g=new THREE.Group();g.position.set(w.x,0,w.z);
 const po=new THREE.Mesh(GEO.pole,MAT.white);po.scale.y=8;g.add(po);const fl=new THREE.Mesh(GEO.flag,fm[(FLAGS.length)%4]);fl.position.y=7.2;g.add(fl);trackG.add(g);FLAGS.push({m:fl,p:Math.random()*6,b:Math.atan2(TA[0].x,TA[0].z)+Math.PI/2});}

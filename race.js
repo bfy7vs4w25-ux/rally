@@ -17,6 +17,8 @@ cars.push(c);if(isP)pl=c;});
 cars.forEach(c=>{near(c);place(c);c.tx=c.x;c.tz=c.z;c.ta=c.a;});}
 const GR=[0,0.2,0.36,0.52,0.68,0.84,9],GTQ=[1.5,1.28,1.1,0.97,0.87,0.79];
 function phys(c,i,d){const st=c.st,on=c.dist<HW+0.4,kerb=!on&&c.dist<HW+2.3&&CUR[c.idx],offr=!on&&!kerb,sf=offr?st.off*WX.off:WX.road*(kerb?0.96:1);
+let pud=0;if(WX.wet>0.15&&on){const pl_=PUDI.get(c.idx);if(pl_)for(const q of pl_){const p=PUD[q];if((c.x-p[0])**2+(c.z-p[1])**2<p[2]*p[2]){pud=1;break;}}}c.pud=pud;
+const sf2=pud?sf*(1-0.42*WX.wet):sf;
 const fx=Math.sin(c.a),fz=Math.cos(c.a);let vf=c.vx*fx+c.vz*fz,vl=c.vx*fz-c.vz*fx;
 const sens=c.pl?[0.72,1,1.3][SET.steer]:1,ts=Math.max(-1,Math.min(1,i.s));c.sv+=(ts-c.sv)*Math.min(1,(Math.abs(ts)<Math.abs(c.sv)?0.32:0.12*sens)*d);
 const wantB=!!i.n&&!offr&&vf>0.15&&c.nit>(c.boost?0.5:12);if(wantB&&!c.boost&&c.pl)whoosh();c.boost=wantB;
@@ -31,7 +33,7 @@ if(i.down>0){if(vf>0.02){const b=st.brk*(0.78+0.35*Math.min(1,vf))*i.down*(offr?
 if(i.up<=0&&i.down<=0){vf*=Math.pow(0.9935,d);wt=0.2;}
 vf*=Math.pow(offr?1-0.018*WX.drag:0.9988,d);if(vf>mx)vf=Math.max(mx,vf-(offr?0.03:0.01)*d);
 c.wt+=(wt-c.wt)*Math.min(1,0.12*d);
-let grip=st.grip*sf*(c.boost?0.94:1)*(1+(st.df||0)*vf*vf),rearK=1;
+let grip=st.grip*sf2*(c.boost?0.94:1)*(1+(st.df||0)*vf*vf),rearK=1;
 if(st.rwd&&i.up>0.6&&vf>0.1&&vf<st.max*0.75)rearK-=0.24*st.rwd*i.up*Math.abs(c.sv)*(1-vf/st.max)*(c.ai?0.45:1);
 rearK*=1-0.1*Math.max(0,-c.wt);
 let yawT=vf*c.sv*(0.5/(1+spd*4.2))/2.6*(1+0.3*c.wt);
@@ -80,7 +82,7 @@ if(ld>=LAPS[cfg.l]&&!c.fin){c.fin=++finN;c.ft=gt;if(c.pl)finish();}}}
 collide();
 const cx=cam.position.x,cz=cam.position.z;
 for(const c of cars){if((c.x-cx)**2+(c.z-cz)**2>130*130||Math.abs(c.v)<0.1)continue;const fx=Math.sin(c.a),fz=Math.cos(c.a),rx=c.x-fx*1.4,rz=c.z-fz*1.4;
-if(WX.type==='rain'&&c.on&&Math.abs(c.v)>0.45&&Math.random()<Math.min(1,c.v)*0.9*d)emit(rx-fx*0.5,rz-fz*0.5,[0.78,0.8,0.84],0.04,1);
+if(WX.type==='rain'&&c.on&&Math.abs(c.v)>0.5&&Math.random()<(c.pud?0.9:0.22)*Math.min(1,c.v)*d)emit(rx-fx*0.5,rz-fz*0.5,[0.8,0.82,0.86],0.04,c.pud?1:2);
 if(c.spin&&Math.random()<0.7*d)emit(rx,rz,[0.88,0.88,0.9],0.03,0);
 if(!c.on&&!c.kerb){if(Math.random()<0.8*d)emit(rx,rz,TH0.dust,0.05,1);}
 else{const sk=c.slip>0.05||(c.hb&&Math.abs(c.v)>0.25)||(c.brk&&c.v>0.95);

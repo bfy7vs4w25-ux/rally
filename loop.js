@@ -1,7 +1,8 @@
 const tmp=new THREE.Vector3(),look=new THREE.Vector3(),camLook=new THREE.Vector3();let last=performance.now(),TT=0,orb=0,first=true,acc=0,camYaw=0,camDist=11,shakeT=0;
 const STEP=1000/120;
 function ex(k,dt){return 1-Math.exp(-k*dt);}
-function loop(t){const dt=Math.min(100,t-last);last=t;TT+=dt;const d=dt/16.67;
+let ftAvg=16.7,drT=0,drS=1;
+function loop(t){const dt=Math.min(100,t-last);last=t;ftAvg=ftAvg*0.94+dt*0.06;drT+=dt;if(drT>1200){drT=0;const base=cfg.q?DPR:Math.min(1,DPR);let ns=drS;if(ftAvg>20.5)ns=Math.max(0.5,drS-0.12);else if(ftAvg<15.5)ns=Math.min(1,drS+0.06);if(ns!==drS){drS=ns;ren.setPixelRatio(base*drS);rs();}}TT+=dt;const d=dt/16.67;
 if(mode==='count'){cdE+=dt;const n=Math.min(5,Math.floor(cdE/600));if(n!==lastLit&&cdE<3600){lastLit=n;lamps(n);if(n>0)beep(440,0.18);}
 if(cdE>=3600){mode='race';acc=0;lamps(0,true);beep(880,0.4,0.06);toast(T('go'),'#2ee66b');setTimeout(()=>{if(mode!=='menu')$('lt').style.display='none';},900);setTimeout(()=>{if(mode!=='count')lamps(0);},2500);}}
 if(mode==='race'||mode==='done'||(mode==='pause'&&NET.on)){acc+=dt;let n=0;while(acc>=STEP&&n<12){gt+=STEP;step(STEP/16.67,STEP);acc-=STEP;n++;}if(n>=12)acc=0;}
@@ -28,7 +29,7 @@ const sl=pl?pl.slip+(pl.hb&&Math.abs(pl.v)>0.3?0.06:0):0;
 if(mode==='race'||mode==='count')engine(true,mode==='count'?(keys.up?0.75:0.15):ge.rpm,mode==='race'?sl:0);else if(mode==='done')engine(true,ge.rpm*0.7,0);else engine(false,0,0);
 if(mode==='done'&&$('done').classList.contains('on')){doneT+=dt;if(doneT>600){doneT=0;results();}}
 ren.render(scene,cam);requestAnimationFrame(loop);}
-function applyQ(){ren.setPixelRatio(cfg.q?DPR:1);const ms=Math.min(cfg.q?4096:2048,ren.capabilities.maxTextureSize);sun.shadow.mapSize.set(ms,ms);if(sun.shadow.map){sun.shadow.map.dispose();sun.shadow.map=null;}rs();}
+function applyQ(){drS=1;ren.setPixelRatio(cfg.q?DPR:Math.min(1,DPR));const ms=Math.min(cfg.q?4096:2048,ren.capabilities.maxTextureSize);sun.shadow.mapSize.set(ms,ms);if(sun.shadow.map){sun.shadow.map.dispose();sun.shadow.map=null;}rs();}
 function rebuild(){$('load').style.display='flex';$('load').style.opacity=1;setTimeout(()=>{buildTrack(cfg.t);newRace();prev();if(stepI===6)menuRender(true);},40);}
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&!NET.on)pause();});
 let fsExit=0;document.addEventListener('fullscreenchange',()=>{if(!isFS()){fsExit=performance.now();pause();}});
