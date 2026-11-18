@@ -188,6 +188,15 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 #hBtns .ib{width:38px;height:38px;border-radius:11px;background:transparent!important;border:0!important;box-shadow:none!important}#hBtns .ib:active,#hBtns .ib:hover{background:rgba(255,255,255,0.1)!important}
 .touch .kc.mini{display:none}
 #tp,#sp,#nit{transition:opacity .35s}#g.dn #tp,#g.dn #sp,#g.dn #nit{opacity:0!important;pointer-events:none!important}
+
+.cg{grid-template-columns:repeat(3,minmax(0,1fr))}.cv4{width:100%;height:46px;display:block}
+.cg .co{padding:8px 8px 7px;gap:4px;align-items:stretch}.cg .co .nm{font-size:12.5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spec{border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:linear-gradient(160deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));display:flex;flex-direction:column;gap:10px}
+.spec .sh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.spec .sn{font-size:19px;font-weight:800;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spec .chips{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.spec .chip{font-size:11px;font-weight:600;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);white-space:nowrap}
+.spec .bars{display:grid;grid-template-columns:1fr 1fr;gap:7px 16px}.spec .br{display:flex;flex-direction:column;gap:4px}.spec .br span{font-size:11px;color:var(--mut)}
+.spec .br i{display:block;height:5px;border-radius:5px;background:rgba(255,255,255,0.09);overflow:hidden}.spec .br b{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.spec .br:last-child{grid-column:1/-1}
 </style>
 </head>
 <body>
@@ -199,7 +208,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 <path d="M40 64h250" stroke="#fff" stroke-opacity=".08"/><path d="M60 58l70-2" stroke="url(#spg)" stroke-opacity=".7" stroke-width="2"/>
 <rect x="290" y="62" width="12" height="4" rx="2" fill="#fff6d8"/><ellipse cx="318" cy="64" rx="26" ry="10" fill="url(#sph)" opacity=".6"/><rect x="18" y="64" width="9" height="4" rx="2" fill="#ff3b30"/>
 <g class="spWh"><circle cx="78" cy="80" r="15" fill="#0b0d12" stroke="#cfd5de" stroke-width="2.5"/><path d="M78 69v22M67 80h22M70.5 72.5l15 15M85.5 72.5l-15 15" stroke="#cfd5de" stroke-width="1.6"/></g>
-<g class="spWh"><circle cx="248" cy="80" r="15" fill="#0b0d12" stroke="#cfd5de" stroke-width="2.5"/><path d="M248 69v22M237 80h22M240.5 72.5l15 15M255.5 72.5l-15 15" stroke="#cfd5de" stroke-width="1.6"/></g></svg></div><div class="spRoad"></div><div class="spLogo">3D RALLY</div><div class="spTag" data-t="tagline">Arcade rally élmény</div><div class="spFoot"><div class="spBar"><i id="spB"></i></div><div class="spGo" data-t="tapStart">Koppints az indításhoz</div></div></div><div class="ver">v2.0</div></div>
+<g class="spWh"><circle cx="248" cy="80" r="15" fill="#0b0d12" stroke="#cfd5de" stroke-width="2.5"/><path d="M248 69v22M237 80h22M240.5 72.5l15 15M255.5 72.5l-15 15" stroke="#cfd5de" stroke-width="1.6"/></g></svg></div><div class="spRoad"></div><div class="spLogo">3D RALLY</div><div class="spTag" data-t="tagline">Arcade rally élmény</div><div class="spFoot"><div class="spBar"><i id="spB"></i></div><div class="spGo" data-t="tapStart">Koppints az indításhoz</div></div></div><div class="ver">v2.1</div></div>
 
 <div id="g">
 <canvas id="cv" tabindex="0"></canvas>
@@ -235,7 +244,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 </div>
 <div id="menu" class="ov on" style="display:block">
 <div class="pnl gl mp" id="mp">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:40px"><div class="logo"><i></i><span>3D rally</span><span class="ver">v2.0</span></div><div style="display:flex;gap:6px"><button class="ib" id="mex" aria-label="Teljes képernyő" data-i="max"></button><button class="ib" id="msb" aria-label="Hang" data-i="vol"></button></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:40px"><div class="logo"><i></i><span>3D rally</span><span class="ver">v2.1</span></div><div style="display:flex;gap:6px"><button class="ib" id="mex" aria-label="Teljes képernyő" data-i="max"></button><button class="ib" id="msb" aria-label="Hang" data-i="vol"></button></div></div>
 <div id="mst"></div>
 <div id="mb" style="display:flex;flex-direction:column;gap:13px;min-height:0"></div>
 <div class="mf" id="mf"></div>
@@ -257,18 +266,18 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 <button class="gh" id="dM" data-t="mainMenu">Főmenü</button>
 </div></div>
 <div id="intro"><div class="lb t"></div><div class="lb b"></div><div class="ti"><small>3D RALLY</small><b id="inT"></b><span id="inS"></span></div><div class="sk" id="inK" data-t="skipH">Koppints a kihagyáshoz</div></div>
-<div id="load"><div class="logo"><i></i><span>3D rally</span><span class="ver">v2.0</span></div><div class="spin"></div><div id="loadT" data-t="loading">Pálya betöltése…</div></div>
+<div id="load"><div class="logo"><i></i><span>3D rally</span><span class="ver">v2.1</span></div><div class="spin"></div><div id="loadT" data-t="loading">Pálya betöltése…</div></div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="data.js?v=2.0"></script>
-<script src="i18n.js?v=2.0"></script>
-<script src="world.js?v=2.0"></script>
-<script src="weather.js?v=2.0"></script>
-<script src="car.js?v=2.0"></script>
-<script src="race.js?v=2.0"></script>
+<script src="data.js?v=2.1"></script>
+<script src="i18n.js?v=2.1"></script>
+<script src="world.js?v=2.1"></script>
+<script src="weather.js?v=2.1"></script>
+<script src="car.js?v=2.1"></script>
+<script src="race.js?v=2.1"></script>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="net.js?v=2.0"></script>
-<script src="ui.js?v=2.0"></script>
-<script src="loop.js?v=2.0"></script>
+<script src="net.js?v=2.1"></script>
+<script src="ui.js?v=2.1"></script>
+<script src="loop.js?v=2.1"></script>
 </body>
 </html>

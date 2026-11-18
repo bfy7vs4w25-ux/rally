@@ -40,11 +40,19 @@ let a=1e9,b=-1e9,c0=1e9,d=-1e9;ps.forEach(p=>{a=Math.min(a,p.x);b=Math.max(b,p.x
 const sc=Math.min((w-24)/(b-a),(h-18)/(d-c0)),ox=(w-(b-a)*sc)/2,oz=(h-(d-c0)*sc)/2,X=v=>ox+(v.x-a)*sc,Z=v=>oz+(v.z-c0)*sc;
 x.lineJoin='round';x.beginPath();ps.forEach((p,k)=>k?x.lineTo(X(p),Z(p)):x.moveTo(X(p),Z(p)));x.closePath();x.strokeStyle='rgba(0,0,0,0.35)';x.lineWidth=7;x.stroke();x.strokeStyle='#fff';x.lineWidth=2.5;x.stroke();
 x.fillStyle='#ff5a36';x.beginPath();x.arc(X(ps[0]),Z(ps[0]),4,0,7);x.fill();}
-function drawCar(c,i){if(!c)return;const d=CARS[i],w=c.clientWidth||150,h=50,x=hc(c,w,h),col='#'+new THREE.Color(COLS[cfg.k][1]).getHexString(),sc=Math.min((w-14)/5,(h-6)/1.6),X=z=>w/2+z*sc,Y=y=>h-4-y*sc;
-const poly=(pts,f)=>{x.beginPath();pts.forEach((p,k)=>k?x.lineTo(X(p[0]),Y(p[1])):x.moveTo(X(p[0]),Y(p[1])));x.closePath();x.fillStyle=f;x.fill();};
-x.fillStyle='rgba(0,0,0,0.3)';x.beginPath();x.ellipse(w/2,h-3,2.4*sc,3,0,0,7);x.fill();
-poly(d.cab,'#2b3a4a');poly(d.body,col);
-for(const q of[[d.wh.f,d.wh.r],[d.wh.b,d.wh.rr]]){x.fillStyle='#151515';x.beginPath();x.arc(X(q[0]),Y(q[1]),q[1]*sc,0,7);x.fill();x.fillStyle=d.rim==='white'?'#f2f2f2':d.rim==='dark'?'#4a4f57':'#c9ced6';x.beginPath();x.arc(X(q[0]),Y(q[1]),q[1]*sc*0.58,0,7);x.fill();}}
+function specR(){const el=$('cSpec');if(!el)return;const d=CARS[cfg.c],st=[[T('stTop'),nv(d.max,1.08,1.38)],[T('stAcc'),nv(d.acc,0.014,0.021)],[T('stBrk'),nv(d.brk,0.026,0.034)],[T('stGrip'),nv(d.grip,0.0145,0.019)],[T('stOff'),nv(d.off,0.4,0.95)]];
+if(!el.firstChild)el.innerHTML='<div class="sh"><div style="min-width:0"><div class="sn" id="sN"></div><div class="sub" id="sT"></div></div><div class="chips" id="sC"></div></div><div class="bars">'+st.map((s,i)=>'<div class="br"><span>'+s[0]+'</span><i><b id="sb'+i+'"></b></i></div>').join('')+'</div>';
+const ch=t=>'<span class="chip">'+t+'</span>';$('sN').textContent=carN(cfg.c);$('sT').textContent=TA_('tags')[cfg.c];$('sC').innerHTML=ch(Math.round(SPD(d.max*180))+' '+UN())+ch(d.awd?T('drvA'):T('drvR'))+ch(d.m<0.95?T('wL'):d.m<1.25?T('wM'):T('wH'));
+requestAnimationFrame(()=>st.forEach((s,i)=>{const b=$('sb'+i);if(b)b.style.width=Math.round(Math.max(0.08,Math.min(1,s[1]))*100)+'%';}));}
+function drawCar(c,i){if(!c)return;const d=CARS[i],w=c.clientWidth||110,h=c.clientHeight||46,x=hc(c,w,h),cc=new THREE.Color(COLS[cfg.k][1]),col='#'+cc.getHexString(),dk='#'+cc.clone().multiplyScalar(0.55).getHexString(),lt='#'+cc.clone().lerp(new THREE.Color(1,1,1),0.35).getHexString();
+const top=Math.max(...d.body.map(q=>q[1]),...d.cab.map(q=>q[1])),sc=Math.min((w-10)/5.0,(h-6)/(top+0.15)),X=z=>w/2+z*sc,Y=y=>h-3-y*sc;
+const path=pts=>{x.beginPath();pts.forEach((p,k)=>k?x.lineTo(X(p[0]),Y(p[1])):x.moveTo(X(p[0]),Y(p[1])));x.closePath();};
+x.fillStyle='rgba(0,0,0,0.35)';x.beginPath();x.ellipse(w/2,h-3,2.5*sc,2.6,0,0,7);x.fill();
+path(d.cab);x.fillStyle='#22303f';x.fill();x.strokeStyle=dk;x.lineWidth=Math.max(1.2,sc*0.06);x.stroke();
+path(d.body);const g=x.createLinearGradient(0,Y(top),0,Y(d.body[0][1]));g.addColorStop(0,lt);g.addColorStop(0.55,col);g.addColorStop(1,dk);x.fillStyle=g;x.fill();
+x.strokeStyle='rgba(255,255,255,0.35)';x.lineWidth=1;x.beginPath();x.moveTo(X(d.body[0][0]+0.3),Y(d.body[0][1]+0.18));x.lineTo(X(d.body[1][0]-0.3),Y(d.body[1][1]+0.18));x.stroke();
+x.fillStyle='#fff6d8';x.fillRect(X(d.hl[0])-2,Y(d.hl[1])-1.5,3,3);x.fillStyle='#ff3b30';x.fillRect(X(d.tl[0])-1,Y(d.tl[1])-1.5,3,3);
+for(const q of[[d.wh.f,d.wh.r],[d.wh.b,d.wh.rr]]){x.fillStyle='#0d0e10';x.beginPath();x.arc(X(q[0]),Y(q[1]),q[1]*sc,0,7);x.fill();x.fillStyle=d.rim==='white'?'#f2f2f2':d.rim==='dark'?'#5a606a':d.rim==='gold'?'#d4a83a':'#c9ced6';x.beginPath();x.arc(X(q[0]),Y(q[1]),q[1]*sc*0.6,0,7);x.fill();x.fillStyle='#1a1c20';x.beginPath();x.arc(X(q[0]),Y(q[1]),q[1]*sc*0.18,0,7);x.fill();}}
 const nv=(v,a,b)=>0.25+0.75*(v-a)/(b-a);
 function prev(){const e=$('prev'),sh=mode==='menu'&&stepI>0&&stepI!==4&&stepI!==5&&stepI!==7&&stepI!==8&&G.clientWidth>=760;e.classList.toggle('on',sh);if(!sh)return;
 if(stepI===2||stepI===9){const d=CARS[cfg.c];e.innerHTML='<div class="pt">'+carN(cfg.c)+'</div><div class="sub">'+TA_('tags')[cfg.c]+' · '+colN(cfg.k)+'</div><div class="sub" style="margin-top:4px">'+T('topSpeed')+' '+Math.round(SPD(d.max*180))+' '+UN()+'</div>';}
@@ -63,10 +71,10 @@ HM('h1','flag',T('race'),T('raceSub'),1)+HM('h4','users',T('online'),T('onlineSu
 else if(stepI===1){mb.innerHTML='<div class="mt">'+T('pickTrack')+'</div><div class="g3" id="oT"></div>';
 cards($('oT'),TR.map((t,i)=>({a:trN(i),h:'<canvas class="cv3"></canvas><div class="nm">'+trN(i)+'</div><div class="sub"><i class="dd" style="background:'+t.dc+'"></i>'+TA_('tShort')[i]+'</div>',d:drawTrack})),'t',()=>rebuild());
 foot(T('back'),0,'<span>'+T('next')+'</span>'+svg('arrR'),2);}
-else if(stepI===2){mb.innerHTML='<div class="mt">'+T('pickCar')+'</div><div class="g2" id="oC"></div><div><div class="sec">'+T('paint')+' · <span id="cnm" style="color:#e8eaee;text-transform:none;letter-spacing:0">'+colN(cfg.k)+'</span></div><div id="oK" class="sws"></div></div>';
-cards($('oC'),CARS.map((c,i)=>({a:carN(i),h:'<canvas class="cv2"></canvas><div><div class="nm">'+carN(i)+'</div><div class="sub">'+TA_('tags')[i]+'</div></div>'+bar(T('stTop'),nv(c.max,1.1,1.38))+bar(T('stAcc'),nv(c.acc,0.014,0.021))+bar(T('stGrip'),nv(c.grip,0.0145,0.019))+bar(T('stOff'),nv(c.off,0.4,0.78)),d:drawCar})),'c',()=>{carChanged();});
+else if(stepI===2){mb.innerHTML='<div class="mt">'+T('pickCar')+'</div><div class="g3 cg" id="oC"></div><div class="spec" id="cSpec"></div><div><div class="sec">'+T('paint')+' · <span id="cnm" style="color:#e8eaee;text-transform:none;letter-spacing:0">'+colN(cfg.k)+'</span></div><div id="oK" class="sws"></div></div>';
+cards($('oC'),CARS.map((c,i)=>({a:carN(i),h:'<canvas class="cv4"></canvas><div class="nm">'+carN(i)+'</div>',d:drawCar})),'c',()=>{carChanged();});specR();
 const ok=$('oK');COLS.forEach((cc,i)=>{const b=document.createElement('button');b.className='sw'+(cfg.k===i?' sel':'');b.style.background='#'+new THREE.Color(cc[1]).getHexString();b.setAttribute('aria-label',colN(i));
-b.onclick=()=>{cfg.k=i;[...ok.children].forEach((e,j)=>e.classList.toggle('sel',j===i));$('cnm').textContent=colN(i);[...$('oC').children].forEach((e,j)=>drawCar(e.querySelector('canvas'),j));carChanged();};ok.appendChild(b);});
+b.onclick=()=>{if(cfg.k===i)return;cfg.k=i;[...ok.children].forEach((e,j)=>e.classList.toggle('sel',j===i));$('cnm').textContent=colN(i);[...$('oC').children].forEach((e,j)=>drawCar(e.querySelector('canvas'),j));carChanged();};ok.appendChild(b);});
 foot(T('back'),carBack===6?6:1,'<span>'+T('next')+'</span>'+svg('arrR'),9);}
 else if(stepI===9){const S2=(k,id,wr)=>'<div><div class="sec">'+T(k)+'</div><div class="seg'+(wr?' wrap':'')+'" id="'+id+'"></div></div>';
 mb.innerHTML='<div class="mt">'+T('custom')+'</div>'+S2('rimL','cR',1)+S2('livL','cL')+S2('spnL','cS',1)+S2('numL','cN')+S2('tintL','cT');const ch=()=>carChanged();
@@ -107,7 +115,7 @@ $('cpy').onclick=()=>{try{navigator.clipboard.writeText(NET.code).then(()=>toast
 $('lcar').onclick=()=>{carBack=6;go(2);};
 foot(T('leave'),()=>{netReset();carBack=1;go(5);},NET.host?svg('flag')+'<span>'+T('start')+'</span>':'<span>'+T('hostStarts')+'</span>',NET.host?hostStart:undefined,'lgo');
 const g=$('lgo');if(g){g.classList.toggle('dis',NET.host?!con:true);}}
-function carChanged(){newRace();prev();if(NET.on)sendHello();}
+function carChanged(){swapPlayer();prev();specR();if(NET.on)sendHello();}
 function fitMenu(){const mp=$('mp');if(!mp)return;mp.style.height='auto';mp.style.transform='translateY(-50%)';const nat=mp.scrollHeight,av=G.clientHeight-32,H=Math.max(nat,Math.min(600,av));mp.style.height=H+'px';const s=Math.min(1,av/H);mp.style.transform='translateY(-50%) scale('+s+')';}
 
 const KM={ShiftLeft:'n',ShiftRight:'n',KeyN:'n',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'hb'};

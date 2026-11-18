@@ -129,7 +129,13 @@ body:[[-2.35,0.34],[2.3,0.34],[2.38,0.6],[2.25,0.82],[0.6,0.92],[-1.6,0.94],[-2.
 wh:{r:0.42,rr:0.46,f:1.5,b:-1.45,x:0.98},hl:[2.4,0.7],tl:[-2.37,0.84]},
 {name:'Prototípus',tag:'Versenyprototípus',max:1.38,acc:0.015,brk:0.033,grip:0.0178,off:0.42,offMax:0.38,m:0.85,col:5,rim:'dark',ex:'proto',rt:6,ny:0.43,ns:0.4,
 body:[[-2.4,0.22],[2.35,0.22],[2.45,0.32],[1.6,0.55],[0.9,0.62],[-1.6,0.7],[-2.4,0.8]],w:2.0,cab:[[0.9,0.6],[0.1,1.0],[-0.8,1.02],[-1.4,0.68]],cw:1.1,
-wh:{r:0.4,rr:0.41,f:1.55,b:-1.5,x:0.95},hl:[2.38,0.38],tl:[-2.42,0.68]}];
+wh:{r:0.4,rr:0.41,f:1.55,b:-1.5,x:0.95},hl:[2.38,0.38],tl:[-2.42,0.68]},
+{name:'Vihar',tag:'Túraautó',max:1.29,acc:0.0175,brk:0.032,grip:0.0172,off:0.5,offMax:0.45,m:1.05,col:3,rim:'gold',ex:'touring',rt:6,ny:0.5,ns:0.56,
+body:[[-2.3,0.26],[2.25,0.26],[2.37,0.4],[2.2,0.6],[1.0,0.73],[-1.5,0.79],[-2.25,0.82],[-2.37,0.6]],w:2.02,cab:[[0.95,0.72],[0.1,1.1],[-1.05,1.12],[-1.75,0.79]],cw:1.5,
+wh:{r:0.4,rr:0.41,f:1.42,b:-1.42,x:0.98},hl:[2.3,0.5],tl:[-2.34,0.7]},
+{name:'Szikla',tag:'Terepjáró',max:1.12,acc:0.018,brk:0.028,grip:0.0158,off:0.95,offMax:0.9,m:1.4,col:4,rim:'dark',ex:'baja',rt:5,ny:0.86,ns:0.55,
+body:[[-2.25,0.62],[2.12,0.62],[2.33,0.88],[2.15,1.1],[0.75,1.18],[-2.2,1.17],[-2.3,0.92]],w:2.1,cab:[[0.7,1.16],[0.12,1.7],[-0.95,1.72],[-1.25,1.17]],cw:1.66,
+wh:{r:0.56,rr:0.56,f:1.42,b:-1.45,x:1.0},hl:[2.3,0.95],tl:[-2.28,1.0]}];
 CARS.forEach(c=>{const zs=c.body.map(q=>q[0]),z0=Math.min(...zs),z1=Math.max(...zs);c.cr=c.w/2+0.04;c.zc=(z0+z1)/2;c.ho=Math.max(0.6,(z1-z0)/2-c.cr+0.08);});
 const COLS=[['Piros',0xd7263d],['Kék',0x1b6ee8],['Sárga',0xf2b705],['Zöld',0x1f9d55],['Fehér',0xf1f1f1],['Fekete',0x1b1c20],['Narancs',0xff6b1a],['Lila',0x7b3fe4]];
 const DRV=['Kovács','Szabó','Tóth','Nagy','Horváth','Varga','Kiss','Molnár'],HELM=[0xffffff,0xffcc00,0x1b6ee8,0xd7263d,0x222222,0x3ddc97,0xff7a1a,0x9b5de5];
@@ -143,7 +149,7 @@ const needleT=ctex(128,128,(x,w,h)=>{x.fillStyle='#8a8a8a';x.fillRect(0,0,w,h);f
 const CARD=(()=>{const gs=[];for(let i=0;i<3;i++){const g=new THREE.PlaneGeometry(2,2,2,2);if(i===1)g.rotateY(Math.PI/2);if(i===2)g.rotateX(Math.PI/2);gs.push(g);}const m=mergeGeo(gs),p=m.attributes.position,n=m.attributes.normal,v=new THREE.Vector3();for(let i=0;i<p.count;i++){v.set(p.getX(i),p.getY(i)+0.4,p.getZ(i)).normalize();n.setXYZ(i,v.x,v.y,v.z);}return m;})();
 MAT.leaf=L(0xffffff,{map:leafT,alphaTest:0.5,side:THREE.DoubleSide,alphaToCoverage:true});MAT.needle=L(0xffffff,{map:needleT});
 
-CARS.forEach((c,i)=>Object.assign(c,[{rwd:1,df:0.22,resp:1},{rwd:0,df:0.04,resp:1.15},{rwd:1.3,df:0,resp:0.85},{rwd:0.8,df:0.42,resp:1.1}][i]));
+CARS.forEach((c,i)=>Object.assign(c,[{rwd:1,df:0.22,resp:1},{rwd:0,df:0.04,resp:1.15,awd:1},{rwd:1.3,df:0,resp:0.85},{rwd:0.8,df:0.42,resp:1.1},{rwd:0.9,df:0.16,resp:1.05},{rwd:0,df:0,resp:0.9,awd:1}][i]));
 
 function mergeGroup(gr){const by=new Map(),rm=[];gr.children.forEach(m=>{if(!m.isMesh||m.userData.dyn)return;m.updateMatrix();const g=m.geometry.clone().applyMatrix4(m.matrix);let a=by.get(m.material);if(!a)by.set(m.material,a=[]);a.push(g);rm.push(m);});
 rm.forEach(m=>gr.remove(m));const out=[];by.forEach((l,mat)=>{const geo=mergeGeo(l);geo.userData.k=0;l.forEach(g=>g.dispose());const mm=new THREE.Mesh(geo,mat);mm.castShadow=true;gr.add(mm);out.push(geo);});return out;}
