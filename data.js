@@ -58,11 +58,11 @@ function txtTex(w,h,txt,bg,fg,fs){return ctex(w,h,(x)=>{x.fillStyle=bg;x.fillRec
 function adArt(w,h,o){return ctex(w,h,(x)=>{const g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,o.c1);g.addColorStop(1,o.c2);x.fillStyle=g;x.fillRect(0,0,w,h);
 x.globalAlpha=0.16;x.fillStyle='#fff';for(let i=0;i<5;i++){x.beginPath();x.moveTo(w*(0.45+i*0.12),0);x.lineTo(w*(0.55+i*0.12),0);x.lineTo(w*(0.4+i*0.12),h);x.lineTo(w*(0.3+i*0.12),h);x.fill();}x.globalAlpha=1;
 const r=h*0.32,cx=h*0.55,cy=h/2;x.fillStyle=o.fg;x.beginPath();x.arc(cx,cy,r,0,7);x.fill();x.fillStyle=o.c1;x.font='bold '+(r*1.1|0)+'px Inter,sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(o.n[0],cx,cy+r*0.06);
-x.fillStyle=o.fg;x.textAlign='left';x.font='800 '+(h*0.4|0)+'px Inter,sans-serif';x.fillText(o.n,h*1.05,h*0.44);x.globalAlpha=0.85;x.font='600 '+(h*0.15|0)+'px Inter,sans-serif';x.fillText(o.t,h*1.08,h*0.78);x.globalAlpha=1;
+x.fillStyle=o.fg;x.textAlign='left';const mw=w-h*1.05-h*0.22;let fs=h*0.42;x.font='800 '+(fs|0)+'px Inter,Arial,sans-serif';const tw=x.measureText(o.n).width;if(tw>mw){fs*=mw/tw;x.font='800 '+(fs|0)+'px Inter,Arial,sans-serif';}x.fillText(o.n,h*1.05,h*0.46);x.globalAlpha=0.85;let f2=h*0.15;x.font='600 '+(f2|0)+'px Inter,Arial,sans-serif';const t2=x.measureText(o.t).width;if(t2>mw){f2*=mw/t2;x.font='600 '+(f2|0)+'px Inter,Arial,sans-serif';}x.fillText(o.t,h*1.08,h*0.8);x.globalAlpha=1;
 x.fillStyle='rgba(0,0,0,0.25)';x.fillRect(0,h-h*0.05,w,h*0.05);});}
 const ADD=[{n:'TURBO GUMI',t:'Grip in all weather',c1:'#c81d25',c2:'#7a0f14',fg:'#fff'},{n:'RALLY 26',t:'Championship · Live',c1:'#111318',c2:'#2c3140',fg:'#ffcc00'},{n:'NITRO+',t:'Energy to the finish',c1:'#1f6feb',c2:'#0b2e6b',fg:'#fff'},
 {n:'PIT STOP',t:'Fast service 24/7',c1:'#f2f2f2',c2:'#c9ced6',fg:'#c81d25'},{n:'SZUPER OLAJ',t:'Engine protection',c1:'#0b8457',c2:'#03452c',fg:'#fff'},{n:'ÁSZ MOTOR',t:'Power and precision',c1:'#ff7a00',c2:'#a33f00',fg:'#111'}];
-const ADT=ADD.map(o=>adArt(512,128,o)),BIT=ADD.map(o=>adArt(1024,320,o));
+const ADT=ADD.map(o=>adArt(640,100,o)),BIT=ADD.map(o=>adArt(1024,320,o));
 const ADS=ADT.map(t=>L(0xffffff,{map:t})),BILLM=BIT.map(t=>L(0xffffff,{map:t,emissive:0x1a1a1a}));
 const garT=ctex(1024,128,(x)=>{x.fillStyle='#d9dde2';x.fillRect(0,0,1024,128);const tc=['#d7263d','#1b6ee8','#f2b705','#1f9d55','#7b3fe4','#ff6b1a','#222','#0bb'];for(let i=0;i<8;i++){const x0=i*128+10;x.fillStyle=tc[i];x.fillRect(x0,10,108,14);x.fillStyle='#3a3f47';x.fillRect(x0,30,108,98);x.fillStyle='rgba(255,255,255,0.08)';for(let j=0;j<8;j++)x.fillRect(x0,34+j*12,108,2);x.fillStyle='#fff';x.font='bold 11px sans-serif';x.fillText('BOX '+(i+1),x0+4,21);}});
 const MAT={post:L(0x30343c),white:L(0xf4f4f4),red:L(0xd33b2f),conc:L(0xaeb4bc),conc2:L(0xd9dde2),roof:L(0xf2f2f2),orange:L(0xff7a1a),lampW:new THREE.MeshBasicMaterial({color:0xfffbe6}),
@@ -164,4 +164,4 @@ x.globalCompositeOperation='lighter';for(const a of[0,Math.PI/2]){x.save();x.tra
 const ledT=ctex(128,64,x=>{x.fillStyle='#2a2d33';x.fillRect(0,0,128,64);for(let i=0;i<8;i++)for(let j=0;j<4;j++){const cx=10+i*15.5,cy=10+j*14.5,g=x.createRadialGradient(cx,cy,0,cx,cy,7);g.addColorStop(0,'#ffffff');g.addColorStop(0.5,'#fff3d6');g.addColorStop(1,'#8a8270');x.fillStyle=g;x.beginPath();x.arc(cx,cy,6,0,7);x.fill();}});
 MAT.flood=new THREE.MeshBasicMaterial({map:ledT});MAT.lens=new THREE.MeshBasicMaterial({color:0xfff6e0});
 const GLOWS_M=new THREE.SpriteMaterial({map:glowT,color:0xfff1d2,blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,opacity:0.85});
-GEO.lhead=K(new THREE.SphereGeometry(0.55,14,8,0,Math.PI*2,0,Math.PI/2).scale(1,0.45,1.6));GEO.disc=K(new THREE.CircleGeometry(0.42,16).rotateX(Math.PI/2));
+GEO.lhead=K(new THREE.BoxGeometry(0.62,0.16,1.5).translate(0,0.02,0));GEO.disc=K(new THREE.PlaneGeometry(0.5,1.3).rotateX(Math.PI/2).translate(0,-0.065,0));
