@@ -35,7 +35,7 @@ else{blobs(x,w,h,['#ffffff','#c7d0dc'],120,6,28,0.1,0.25);for(let i=0;i<1500;i++
 noise(x,w,h,22000,0.1,1.5);},true);dt.repeat.set(SZ/22,SZ/22);
 const m=new THREE.Mesh(g,TM(new THREE.MeshLambertMaterial({vertexColors:true,map:dt})));m.receiveShadow=true;trackG.add(m);}
 
-let CRS=[],CRZ=[],TUN=null,WC=[],WATS=[],FERRIS=null,STP=[];
+let RUBM=null,DRYM=null,CRS=[],CRZ=[],TUN=null,WC=[],WATS=[],FERRIS=null,STP=[];
 function watL(x,z){let l=0;for(const c of WC){const dx=x-c[0],dz=z-c[1];if(Math.abs(dx)>c[2]||Math.abs(dz)>c[2])continue;const v=sst(c[2],c[2]*0.72,Math.hypot(dx,dz));if(v>l){l=v;if(l>=1)break;}}return l;}
 function inWat(x,z,m){for(const c of WC)if(Math.hypot(x-c[0],z-c[1])<c[2]*0.9+(m||0))return true;return false;}
 let builtT=-1,P=[],TA=[],CU=[],CUR=[],INS=[],RL=[],VP=[],NP=0,MB,CX=0,CZ=0,RAD=200,TH0=TH[0],seaZ=1e9;
@@ -107,7 +107,7 @@ LB(g,MAT.white,0.4,0.18,12.4,X-0.05,8.1,0);LB(g,MAT.white,0.4,0.18,12.4,X-0.05,4
 function puddles(){const r=Math.random,list=[];PUD=[];PUDI=new Map();
 for(let n=0;n<Math.round(NP/9);n++){const k=Math.floor(r()*NP),lat=(r()<0.6?(r()<0.5?-1:1)*(HW-2-r()*3):(r()-0.5)*HW),p=P[k],t=TA[k],x=p.x+t.z*lat,z=p.z-t.x*lat,rad=1.2+r()*2.2;
 list.push([x,0.124,z,0,Math.atan2(t.x,t.z)+(r()-0.5)*0.6,0,rad*(1.3+r()*0.8),1,rad]);PUD.push([x,z,rad*1.1]);const q=PUD.length-1;for(let o=-3;o<=3;o++){const kk=(k+o+NP)%NP;let a=PUDI.get(kk);if(!a)PUDI.set(kk,a=[]);a.push(q);}}
-PUDM=inst(GEO.plane,PUDMAT,list,false,null,null,320);if(PUDM)PUDM.visible=false;}
+PUDM=inst(GEO.plane,PUDMAT,list,false,null,null,320);if(PUDM)PUDM.traverse(o=>o.renderOrder=3);if(PUDM)PUDM.visible=false;}
 function crowdPush(g,fan,dst){g.updateWorldMatrix(true,false);const e=new THREE.Euler().setFromRotationMatrix(g.matrixWorld,'YXZ'),v=new THREE.Vector3();for(const q of fan){v.set(q[0],q[1],q[2]).applyMatrix4(g.matrixWorld);dst.push([v.x,v.y,v.z,(q[3]||0)+e.y]);}}
 const SEATM=[L(0x1b6ee8),L(0xd7263d),L(0xf2b705)];
 function stand(k,s,len){{const w=W(k,s*(HW+22),0);STP.push([w.x,w.z,1]);}const g=SIDE(k,s),X0=HW+15.5,fan=[],seatC=SEATM[Math.floor(Math.random()*3)],NR=8,DP=1.7,RH=0.72,yT=NR*RH,xb=X0+NR*DP-DP/2+0.25;
@@ -154,9 +154,9 @@ const ROOFB=L(0x9a9ea5),FACM={lo:(()=>{const m=L(0xffffff,{map:FAC.lo});return[m
 function blds(list,cols,tall){if(!list.length)return;const a=[],ac=[],b=[],bc=[];list.forEach((q,i)=>{if(q[7]>tall){a.push(q);ac.push(cols[i]);}else{b.push(q);bc.push(cols[i]);}});inst(GEO.box,FACM.hi,a,true,ac);inst(GEO.box,FACM.lo,b,true,bc);}
 function extras(t,ti){let sd=ti*331+77;const r=()=>{sd=(sd*16807)%2147483647;return sd/2147483647;};
 if(t.tunnel){const k0=Math.floor(t.tunnel[0]*NP),k1=Math.floor(t.tunnel[1]*NP),roof=[],wl=[],lt=[],top=[],topC=[];TUN=[k0,k1];
-for(let k=k0;k<=k1;k+=2){const p=P[k],ry=Math.atan2(TA[k].x,TA[k].z);roof.push([p.x,8.4,p.z,0,ry,0,2*(HW+15),1.3,3.3]);
-for(const s of[-1,1]){const w=W(k,s*(HW+15),0);wl.push([w.x,4.1,w.z,0,ry,0,1.4,8.4,3.3]);if((k-k0)%6===0){const l=W(k,s*(HW-2),0);lt.push([l.x,7.66,l.z,0,ry,0,1.4,0.16,2.6]);}}
-if(k>k0+12&&k<k1-12&&(k>>1)%9<8){top.push([p.x,9.05+9,p.z,0,ry,0,2*(HW+13),18,3.4]);topC.push(new THREE.Color(0xf1e2c8));}
+for(let k=k0;k<=k1;k+=2){const p=P[k],ry=Math.atan2(TA[k].x,TA[k].z);{const o_=((k-k0)>>1)%2?0.02:0;roof.push([p.x,8.4+o_/2,p.z,0,ry,0,2*(HW+15)+o_,1.3+o_,3.25]);}
+for(const s of[-1,1]){const w=W(k,s*(HW+15),0);{const o_=((k-k0)>>1)%2?0.02:0;wl.push([w.x,4.1,w.z,0,ry,0,1.4+o_,8.4+o_,3.25]);}if((k-k0)%6===0){const l=W(k,s*(HW-2),0);lt.push([l.x,7.66,l.z,0,ry,0,1.4,0.16,2.6]);}}
+if(k>k0+12&&k<k1-12&&(k>>1)%9<8){{const o_=((k-k0)>>1)%2?0.03:0;top.push([p.x,9.05+9+o_/2,p.z,0,ry,0,2*(HW+13)+o_,18+o_,3.25]);}topC.push(new THREE.Color(0xf1e2c8));}
 SL.push([p.x,p.z,HW+17]);}
 const tc=TM(L(0x7d8186));inst(GEO.box,tc,roof,true);inst(GEO.box,tc,wl,true);inst(GEO.box,TM(new THREE.MeshBasicMaterial({color:0xfff1c8})),lt,false);blds(top,topC,1e9);}
 if(t.city){const L1=[],C1=[];for(let k=0;k<NP;k+=4)for(const s of[-1,1]){if(r()<0.25||k<40||k>NP-60)continue;const row=r()<0.6?0:1,lat=HW+(row?62:27)+r()*(row?55:18),wd=10+r()*16,dp=10+r()*14,a=W(k,s*(lat+dp/2),0),d=rd(a.x,a.z);
@@ -212,7 +212,7 @@ const rT=ctex(256,512,(x,w,h)=>{x.fillStyle=th.road;x.fillRect(0,0,w,h);noise(x,
 x.fillStyle='rgba(0,0,0,0.12)';x.fillRect(60,0,30,h);x.fillRect(166,0,30,h);x.fillStyle='#f0f0f0';x.fillRect(6,0,7,h);x.fillRect(w-13,0,7,h);},true);
 ROADM=TM(S(0xffffff,0,0.92,{map:rT}));R(()=>[-HW,HW],0.1,ROADM,{vs:30});
 {const rT=ctex(64,256,(x,w_,h)=>{x.clearRect(0,0,w_,h);for(let i=0;i<w_;i++){const v=Math.pow(Math.sin(i/w_*Math.PI),1.6);x.fillStyle='rgba(8,8,10,'+(v*0.3)+')';x.fillRect(i,0,1,h);}for(let i=0;i<260;i++){x.fillStyle='rgba(0,0,0,'+(Math.random()*0.18)+')';x.fillRect(8+Math.random()*48,Math.random()*h,1+Math.random()*2,8+Math.random()*40);}},true);
-const rm=TM(new THREE.MeshBasicMaterial({map:rT,transparent:true,depthWrite:false,opacity:0.85}));R(k=>[RL[k]-1.7,RL[k]+1.7],0.11,rm,{vs:14,free:1}).renderOrder=1;}
+const rm=TM(new THREE.MeshBasicMaterial({map:rT,transparent:true,depthWrite:false,opacity:0.85}));RUBM=rm;R(k=>[RL[k]-1.7,RL[k]+1.7],0.112,rm,{vs:14,free:1}).renderOrder=2;{const dm=TM(new THREE.MeshStandardMaterial({color:0x6d7178,roughness:0.92,metalness:0,transparent:true,opacity:0,depthWrite:false}));DRYM=dm;R(k=>[RL[k]-2.3,RL[k]+2.3],0.108,dm,{vs:6,free:1,uu:1}).renderOrder=1;}}
 const km=TM(new THREE.MeshLambertMaterial({vertexColors:true}));R(k=>CUR[k]?[HW,HW+2.3]:null,0.13,km,{str:1});R(k=>CUR[k]?[-HW-2.3,-HW]:null,0.13,km,{str:1});
 const SG=LG(0);const ln=new THREE.Mesh(GEO.plane,MAT.chk);ln.scale.set(HW*2,1,2.6);ln.position.y=0.15;ln.receiveShadow=true;SG.add(ln);
 for(const s of[-1,1]){LB(SG,MAT.post,0.8,8.2,0.8,s*(HW+3),4.1,0);const w=W(0,s*(HW+3),0);addOb(w.x,w.z,0.8);}
@@ -220,7 +220,7 @@ const bm=new THREE.Mesh(GEO.box,[MAT.post,MAT.post,MAT.post,MAT.post,MAT.ban,MAT
 LB(SG,MAT.post,7.8,2.0,0.55,0,6.5,-0.3);for(let i=0;i<5;i++){const mt=TM(new THREE.MeshBasicMaterial({color:0x2a2d35})),x=-2.8+i*1.4;for(const y of[6.95,6.05]){const m=new THREE.Mesh(GEO.cyl,mt);m.scale.set(0.3,0.08,0.3);m.rotation.x=Math.PI/2;m.position.set(x,y,-0.6);SG.add(m);LB(SG,MAT.post,0.78,0.06,0.32,x,y+0.36,-0.72,1);}GL.push(mt);}
 for(let k=0;k<8;k++){const side=k%2?-1:1,g=LG(gridIdx(k));LB(g,MAT.white,3.6,0.02,0.3,side*4.5,0.12,2.6,1);LB(g,MAT.white,0.3,0.02,1.6,side*4.5-1.65,0.12,1.95,1);LB(g,MAT.white,0.3,0.02,1.6,side*4.5+1.65,0.12,1.95,1);}
 const wl=[],wc=[],WALL=[new Uint8Array(NP),new Uint8Array(NP)],CW=new THREE.Color(0xf2f2f2),CR=new THREE.Color(0xd33b2f),CC=new THREE.Color(0xc9cdd2);
-for(let k=0;k<NP;k+=2)for(const s of[-1,1]){const w=W(k,s*(HW+12.8),0);if(rd(w.x,w.z)<HW+11.8)continue;wl.push([w.x,0.6,w.z,0,Math.atan2(TA[k].x,TA[k].z),0,0.9,1.2,3.2]);wc.push(CUR[k]?((k>>1)%2?CR:CW):CC);WALL[s>0?0:1][k]=1;addOb(w.x,w.z,1.5);}
+for(let k=0;k<NP;k+=2)for(const s of[-1,1]){const w=W(k,s*(HW+12.8),0);if(rd(w.x,w.z)<HW+11.8)continue;{const o_=(k>>1)%2?0.018:0;wl.push([w.x,0.6+o_/2,w.z,0,Math.atan2(TA[k].x,TA[k].z),0,0.9+o_,1.2+o_,3.15]);}wc.push(CUR[k]?((k>>1)%2?CR:CW):CC);WALL[s>0?0:1][k]=1;addOb(w.x,w.z,1.5);}
 inst(GEO.box,MAT.inst,wl,true,wc);
 const ti_=[],tc=[],TC=[new THREE.Color(0x1b1b1b),new THREE.Color(0xf2f2f2),new THREE.Color(0xd33b2f)];
 for(let k=0;k<NP;k+=1){if(CU[k]<0.2)continue;const s=-INS[k];if(!WALL[s>0?0:1][k])continue;const w=W(k,s*(HW+11.3),0),c=TC[(k>>1)%3];ti_.push([w.x,0.17,w.z],[w.x,0.5,w.z],[w.x,0.83,w.z]);tc.push(c,c,c);}

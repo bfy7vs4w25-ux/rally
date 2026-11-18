@@ -21,7 +21,7 @@ wxSeed();
 function pickWeather(th,force){if(force)return force;const r=Math.random();if(th===2)return'snow';if(SET.w===1)return'clear';const bad=SET.w===2||r<0.32;if(!bad)return th===3&&Math.random()<0.4?'wind':'clear';return th===1?'storm':'rain';}
 function applyWeather(type){const t=TR[builtT],th=TH[t.th],s=SURF[t.th];WX={type,road:s.road,off:s.off,drag:s.drag,resp:s.resp,wind:0,wdir:Math.random()*6.28,gust:0,vis:1,wet:type==='rain'?0.25:0};
 let top=th.sky[0],hor=th.sky[1],gr=th.sky[2],fn=350,ff=1750,sunI=1.05,hemI=0.58;
-if(type==='rain'){WX.road*=0.8;WX.off*=0.85;WX.resp*=0.85;top=0x56606c;hor=0x9aa3ad;fn=120;ff=900;sunI=0.35;hemI=0.62;WX.wind=0.25;}
+if(type==='rain'){WX.road*=0.88;WX.off*=0.85;WX.resp*=0.85;top=0x56606c;hor=0x9aa3ad;fn=120;ff=900;sunI=0.35;hemI=0.62;WX.wind=0.25;}
 if(type==='storm'){WX.road*=0.92;WX.off*=0.9;WX.wind=1;top=0xa37c4f;hor=0xd2a56c;fn=40;ff=320;sunI=0.5;hemI=0.7;}
 if(type==='snow'){top=0x8396ad;hor=0xdde4ec;fn=160;ff=1000;sunI=0.6;hemI=0.7;WX.wind=0.2;}
 if(type==='wind')WX.wind=0.45;
@@ -39,7 +39,7 @@ if(WX.type==='storm'){scene.fog.far=WX.fogF*(0.75+0.5*(1-WX.gust/1.8));scene.fog
 if(SNOW&&SNOW.material){SNOW.material.opacity=0.6+0.35*sev;}
 ambient(WX.type==='rain'?0.02+0.035*sev:WX.type==='storm'?0.025+0.03*Math.min(1,WX.gust):WX.type==='wind'?0.012*WX.gust:0,WX.type==='storm'||WX.type==='wind'?500:2600);
 if(rain.visible){RU.t.value=TM*0.001;RU.c.value.copy(cam.position);RU.w.value.set(Math.cos(WX.wdir)*WX.gust*6,Math.sin(WX.wdir)*WX.gust*6);RU.sc.value=G.clientHeight*ren.getPixelRatio()*0.5/Math.tan(cam.fov*Math.PI/360);
-if(mode==='race')WX.wet=Math.min(1,WX.wet+dt/45000);PUDMAT.opacity=Math.min(0.88,WX.wet*1.1);if(ROADM)ROADM.roughness=0.5-WX.wet*0.3;}
+if(mode==='race')WX.wet=Math.min(1,WX.wet+dt/45000);PUDMAT.opacity=Math.min(0.88,WX.wet*1.1);if(ROADM){ROADM.roughness=0.5-WX.wet*0.36;ROADM.color.setScalar(1-0.3*WX.wet);}}
 if(sand.visible){const wx=Math.cos(WX.wdir)*(0.6+WX.gust),wz=Math.sin(WX.wdir)*(0.6+WX.gust);for(let i=0;i<SN;i++){const o=i*3;let x=sPos[o]+wx*d,y=sPos[o+1]+Math.sin(TM*0.002+i)*0.03*d,z=sPos[o+2]+wz*d;
 if(x-cx>60)x-=120;else if(cx-x>60)x+=120;if(z-cz>60)z-=120;else if(cz-z>60)z+=120;if(y<0)y+=14;if(y>14)y-=14;sPos[o]=x;sPos[o+1]=y;sPos[o+2]=z;}sGeo.attributes.position.needsUpdate=true;}}
 function wxForce(c,d){if(!WX.wind||c.v<0.2)return;const f=WX.gust*0.0035*d*(WX.type==='storm'?1:0.45);c.vx+=Math.cos(WX.wdir)*f;c.vz+=Math.sin(WX.wdir)*f;}

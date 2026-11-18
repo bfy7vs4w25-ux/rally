@@ -158,8 +158,8 @@ const pudT=ctex(128,128,(x)=>{x.fillStyle='#000';x.fillRect(0,0,128,128);for(let
 const PUDMAT=new THREE.MeshStandardMaterial({color:0x2a3138,roughness:0.06,metalness:0.55,transparent:true,opacity:0,alphaMap:pudT,depthWrite:false});
 
 PG.hairL=mergeGeo([new THREE.SphereGeometry(0.128,12,7,0,Math.PI*2,0,Math.PI*0.58).scale(0.97,1.06,1.08).translate(0,0.85,-0.015),new THREE.CylinderGeometry(0.115,0.1,0.24,10,1,true,Math.PI*0.5,Math.PI).translate(0,0.74,-0.02)]);
-const fenceT=ctex(64,64,x=>{x.clearRect(0,0,64,64);x.strokeStyle='rgba(235,238,242,1)';x.lineWidth=2;for(let i=-64;i<128;i+=16){x.beginPath();x.moveTo(i,0);x.lineTo(i+64,64);x.stroke();x.beginPath();x.moveTo(i+64,0);x.lineTo(i,64);x.stroke();}},true);
-MAT.fence=L(0xc9ced4,{map:fenceT,alphaTest:0.45,side:THREE.DoubleSide,alphaToCoverage:true});
+const fenceT=ctex(64,64,x=>{x.clearRect(0,0,64,64);x.strokeStyle='rgba(235,238,242,1)';x.lineWidth=3;for(let i=-64;i<128;i+=16){x.beginPath();x.moveTo(i,0);x.lineTo(i+64,64);x.stroke();x.beginPath();x.moveTo(i+64,0);x.lineTo(i,64);x.stroke();}},true);
+MAT.fence=L(0xc9ced4,{map:fenceT,alphaTest:0.25,side:THREE.DoubleSide,alphaToCoverage:true});
 const GLOWP=new THREE.PointsMaterial({map:softT,color:0xfff0c8,size:9,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0.9});
 const lpoolT=ctex(128,128,x=>{const g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'rgba(255,236,200,0.9)');g.addColorStop(0.6,'rgba(255,236,200,0.25)');g.addColorStop(1,'rgba(255,236,200,0)');x.fillStyle=g;x.fillRect(0,0,128,128);});
 const LPOOLM=new THREE.MeshBasicMaterial({map:lpoolT,blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,opacity:0.5});
