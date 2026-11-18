@@ -9,14 +9,24 @@ if(t<120||Math.abs(t-2400)<dt||Math.abs(t-4800)<dt){cam.position.set(px,py,pz);c
 cam.lookAt(camLook);cam.fov+=(fv-cam.fov)*ex(0.01,dt);cam.near=0.3;cam.updateProjectionMatrix();shadowAt(gx,gz,60);if(introE>=INTRO_D)beginCount();}
 function ex(k,dt){return 1-Math.exp(-k*dt);}
 let ftAvg=16.7,drT=0,drS=1;
+
+const HELI=(()=>{const g=new THREE.Group(),bm=S(0xf2f3f5,0.45,0.3),rm=S(0xd7263d,0.3,0.4),dk=S(0x1a1d22,0.4,0.5),gl=S(0x1d2a38,0.9,0.05),add=(geo,m,sx,sy,sz,x,y,z,p)=>{const o=new THREE.Mesh(geo,m);o.scale.set(sx,sy,sz);o.position.set(x,y,z);(p||g).add(o);return o;};
+add(GEO.ball,bm,1.25,1.15,2.4,0,0,0);add(GEO.ball,rm,1.27,0.35,2.25,0,-0.25,0);add(GEO.ball,gl,1.0,0.75,1.15,0,0.3,1.35);add(GEO.box,bm,0.34,0.34,4.6,0,0.3,-3.4);add(GEO.box,rm,0.08,1.3,0.8,0,0.95,-5.6);add(GEO.box,bm,1.6,0.08,0.5,0,0.4,-5.2);
+for(const s of[-1,1]){add(GEO.box,dk,0.08,0.08,3.4,s*0.95,-1.4,0.1);add(GEO.box,dk,0.06,0.5,0.06,s*0.85,-1.15,0.9);add(GEO.box,dk,0.06,0.5,0.06,s*0.85,-1.15,-0.8);}add(GEO.ball,dk,0.32,0.32,0.32,0,-0.95,1.9);add(GEO.cyl,dk,0.12,0.5,0.12,0,1.3,0);
+const rot=new THREE.Group();rot.position.y=1.55;g.add(rot);add(GEO.box,dk,11,0.04,0.3,0,0,0,rot);add(GEO.box,dk,0.3,0.04,11,0,0,0,rot);const tr=new THREE.Group();tr.position.set(0.24,0.95,-5.6);g.add(tr);add(GEO.box,dk,0.04,1.5,0.14,0,0,0,tr);
+g.traverse(o=>{if(o.isMesh)o.castShadow=true;});g.visible=false;scene.add(g);return{g,rot,tr,yaw:0,init:false};})();
+function heliStep(dt){const on=mode==='race'||mode==='count'||mode==='intro'||mode==='done'||mode==='pause';HELI.g.visible=on&&!!pl;if(!HELI.g.visible){HELI.init=false;return;}
+const o=mode==='race'||mode==='done'?standings():[pl],ld=o[0]||pl,f=Math.sin(ld.ra),g=Math.cos(ld.ra),side=Math.sin(TT*0.00021)*42,tx=ld.rx-f*26+g*side,tz=ld.rz-g*26-f*side,ty=46+Math.sin(TT*0.0007)*4,G=HELI.g;
+if(!HELI.init){G.position.set(tx,ty+30,tz-80);HELI.init=true;}const k=ex(0.0012,dt),px=G.position.x,pz=G.position.z;G.position.x+=(tx-px)*k;G.position.z+=(tz-pz)*k;G.position.y+=(ty-G.position.y)*k;
+const vx=G.position.x-px,vz=G.position.z-pz,sp=Math.hypot(vx,vz)/Math.max(1,dt);if(sp>0.002)HELI.yaw+=wrap(Math.atan2(vx,vz)-HELI.yaw)*ex(0.002,dt);G.rotation.set(Math.min(0.25,sp*1.6),HELI.yaw,0,'YXZ');HELI.rot.rotation.y+=dt*0.05;HELI.tr.rotation.x+=dt*0.09;}
 function loop(t){const dt=Math.min(100,t-last);last=t;ftAvg=ftAvg*0.94+dt*0.06;drT+=dt;if(drT>1200){drT=0;const base=cfg.q?DPR:Math.min(1,DPR);let ns=drS;if(ftAvg>20.5)ns=Math.max(0.5,drS-0.12);else if(ftAvg<15.5)ns=Math.min(1,drS+0.06);if(ns!==drS){drS=ns;ren.setPixelRatio(base*drS);rs();}}TT+=dt;const d=dt/16.67;
 if(mode==='count'){cdE+=dt;const n=Math.min(5,Math.floor(cdE/600));if(n!==lastLit&&cdE<3600){lastLit=n;lamps(n);if(n>0)beep(440,0.18);}
-if(cdE>=3600){mode='race';acc=0;lamps(0,true);beep(880,0.4,0.06);toast(T('go'),'#2ee66b');setTimeout(()=>{if(mode!=='menu')$('lt').style.display='none';},900);setTimeout(()=>{if(mode!=='count')lamps(0);},2500);}}
+if(cdE>=3600){mode='race';acc=0;lamps(0,true);beep(880,0.4,0.06);toast(T('go'),'#2ee66b');cheer(0.8);setTimeout(()=>{if(mode!=='menu')$('lt').style.display='none';},900);setTimeout(()=>{if(mode!=='count')lamps(0);},2500);}}
 if(mode==='race'||mode==='done'||(mode==='pause'&&NET.on)){acc+=dt;let n=0;while(acc>=STEP&&n<12){gt+=STEP;step(STEP/16.67,STEP);acc-=STEP;n++;}if(n>=12)acc=0;}
 const al=(mode==='race'||mode==='done'||(mode==='pause'&&NET.on))?acc/STEP:1;netTick(dt);visuals(al,d,TT);
-dustStep(d);wxStep(dt,d,TT);if(CLOUD)CLOUD.rotation.y+=dt*0.000005;
+dustStep(d);heliStep(dt);if(pl&&mode!=='menu'){let lv=0;for(const s of STP){const dd=Math.hypot(s[0]-pl.rx,s[1]-pl.rz);if(dd<160)lv+=s[2]*(1-dd/160);}crowdSnd(Math.min(1,lv),mode!=='pause');}else crowdSnd(0,false);CHEER*=Math.pow(0.9985,dt);wxStep(dt,d,TT);if(CLOUD)CLOUD.rotation.y+=dt*0.000005;
 FLAGS.forEach(f=>f.m.rotation.y=f.b+Math.sin(TT*0.004+f.p)*0.35);
-CUN.t.value=TT*0.001;CUN.ex.value+=((mode==='race'||mode==='done'||mode==='count'||mode==='intro'?1:0.35)-CUN.ex.value)*ex(0.002,dt);pMat.uniforms.sc.value=G.clientHeight*ren.getPixelRatio()*0.5/Math.tan(cam.fov*Math.PI/360);if(WATER)WATER.material.normalMap.offset.set(TT*0.000012,TT*0.000007);
+CUN.t.value=TT*0.001;CUN.ex.value+=((mode==='race'||mode==='done'||mode==='count'||mode==='intro'?1:0.35)-CUN.ex.value)*ex(0.002,dt);pMat.uniforms.sc.value=G.clientHeight*ren.getPixelRatio()*0.5/Math.tan(cam.fov*Math.PI/360);for(const w of WATS)w.material.normalMap.offset.set(TT*0.000012,TT*0.000007);if(FERRIS){FERRIS.w.rotation.z=TT*0.00004;for(const g of FERRIS.g)g.rotation.z=-FERRIS.w.rotation.z;}
 if(mode==='menu'){orb+=dt*0.00008;let lk,fv;
 if((stepI===2||stepI===9)&&pl){tmp.set(pl.x+Math.sin(orb*4)*9.5,2.6,pl.z+Math.cos(orb*4)*9.5);lk=look.set(pl.x,0.7,pl.z);fv=38;shadowAt(pl.x,pl.z,40);}
 else{tmp.set(CX+Math.sin(orb)*RAD*1.05,RAD*0.5,CZ+Math.cos(orb)*RAD*1.05);lk=look.set(CX,0,CZ);fv=50;shadowAt(CX,CZ,RAD*1.4);}

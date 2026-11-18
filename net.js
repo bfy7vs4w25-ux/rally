@@ -23,11 +23,11 @@ function setupConn(c){NET.conn=c;
 c.on('open',()=>{sendHello();if(NET.host)sendCfg();else{stepI=6;menuRender();}netStatus(NET.host?T('nHostOk'):T('nJoined'));lobbyUpd();});
 c.on('data',onMsg);c.on('close',netLost);c.on('error',netLost);}
 function send(m){try{if(NET.conn&&NET.conn.open)NET.conn.send(m);}catch(e){}}
-function sendHello(){send({t:'hello',car:cfg.c,col:cfg.k,num:cfg.num,opt:myOpt()});}
+function sendHello(){send({t:'hello',name:(SET.name||'').slice(0,16),car:cfg.c,col:cfg.k,num:cfg.num,opt:myOpt()});}
 function sendCfg(){if(NET.host)send({t:'cfg',c:{t:cfg.t,l:cfg.l,o:cfg.no,d:cfg.d}});}
 function lobbyUpd(){if(mode==='menu'&&stepI===6)menuRender(true);}
 function onMsg(m){if(!m||!m.t)return;
-if(m.t==='hello'){NET.remote={car:m.car,col:m.col,num:m.num||0,opt:m.opt||{}};lobbyUpd();}
+if(m.t==='hello'){NET.remote={car:m.car,col:m.col,num:m.num||0,opt:m.opt||{},name:typeof m.name==='string'?m.name.replace(/[<>&"'`]/g,'').slice(0,16):''};lobbyUpd();}
 else if(m.t==='cfg'&&!NET.host){const ch=m.c.t!==builtT;cfg.t=m.c.t;cfg.l=m.c.l;cfg.no=m.c.o;cfg.d=m.c.d;if(ch&&mode==='menu')rebuild();lobbyUpd();}
 else if(m.t==='start'&&!NET.host){cfg.t=m.s.t;cfg.l=m.s.l;cfg.d=m.s.d;if(builtT!==m.s.t)buildTrack(m.s.t);startRace(m.s);}
 else if(m.t==='st'){const c=cars.find(c=>c.nid===m.id);if(c&&c.net)netApply(c,m);}
@@ -49,4 +49,4 @@ let ai=0;for(let k=0;k<n;k++){if(k===mid)list.push({id:'h',ty:cfg.c,col:hc[0],nu
 else{list.push({id:'a'+ai,ty:(ai*3+1)%4,col:ac[(ai*5+2)%ac.length],num:[11,31,9,55][ai%4],name:DRV[ai],role:'ai',opt:aiOpt(ai)});ai++;}}
 return{t:cfg.t,l:cfg.l,d:cfg.d,w:pickWeather(TR[cfg.t].th),cars:list};}
 function hostStart(){if(!NET.host)return;if(!NET.conn||!NET.conn.open){toast(T('waitFriend'));return;}const s=makeSpec();send({t:'start',s});startRace(s);}
-function toLobby(remoteAsked){if(NET.host&&!remoteAsked)send({t:'lobby'});mode='menu';stepI=6;applyWeather(TR[builtT].th===2?'snow':'clear');newRace();show('menu');setHud(false);lamps(0);menuRender();}
+function toLobby(remoteAsked){if(NET.host&&!remoteAsked)send({t:'lobby'});mode='menu';introUI(false);stepI=6;applyWeather(TR[builtT].th===2?'snow':'clear');newRace();show('menu');setHud(false);lamps(0);menuRender();}

@@ -34,7 +34,7 @@ b.onclick=()=>{if(ob[key]===i)return;ob[key]=i;[...el.querySelectorAll('.sg')].f
 requestAnimationFrame(()=>segInd(el,false));}
 function segInd(el,anim){const s=el.querySelector('.sg.sel'),ind=el.querySelector('.ind');if(!s||!ind)return;ind.style.transition=anim?'':'none';ind.style.width=s.offsetWidth+'px';ind.style.transform='translateX('+(s.offsetLeft-3)+'px)';if(!anim){void ind.offsetWidth;ind.style.transition='';}}
 const bar=(lb,v)=>'<div class="st"><span>'+lb+'</span><b><i style="width:'+Math.round(Math.max(0.12,Math.min(1,v))*100)+'%"></i></b></div>';
-function drawTrack(c,i){if(!c)return;const w=c.clientWidth||150,h=74,x=hc(c,w,h),t=TR[i];x.fillStyle=TH[t.th].card;x.fillRect(0,0,w,h);
+function drawTrack(c,i){if(!c)return;const w=c.clientWidth||150,h=c.clientHeight||74,x=hc(c,w,h),t=TR[i];x.fillStyle=TH[t.th].card;x.fillRect(0,0,w,h);
 const ps=new THREE.CatmullRomCurve3(t.p.map(q=>new THREE.Vector3(q[0],0,q[1])),true,'centripetal').getSpacedPoints(160);
 let a=1e9,b=-1e9,c0=1e9,d=-1e9;ps.forEach(p=>{a=Math.min(a,p.x);b=Math.max(b,p.x);c0=Math.min(c0,p.z);d=Math.max(d,p.z);});
 const sc=Math.min((w-24)/(b-a),(h-18)/(d-c0)),ox=(w-(b-a)*sc)/2,oz=(h-(d-c0)*sc)/2,X=v=>ox+(v.x-a)*sc,Z=v=>oz+(v.z-c0)*sc;
@@ -57,11 +57,11 @@ const HM=(id,ic,t,s,pri)=>'<button class="hm'+(pri?' pri':'')+'" id="'+id+'"><sp
 function menuRender(quiet){const mb=$('mb'),fw=stepI>=prevStep;prevStep=stepI;
 const flow=(stepI>=1&&stepI<=3||stepI===9)&&carBack!==6;$('mst').innerHTML=flow?stepper():'';$('mst').style.display=flow?'block':'none';
 
-if(stepI===0){carBack=1;mb.innerHTML='<div style="margin:2px 0 4px"><div class="hero">'+T('hero')+'</div><div class="sub" style="font-size:13px;margin-top:8px">'+T('heroSub')+'</div></div>'+
+if(stepI===0){carBack=1;mb.innerHTML='<div style="margin:2px 0 4px"><div class="hero">'+T('hero')+'</div><div class="sub" style="font-size:13px;margin-top:8px">'+T('heroSub')+'</div></div>'+'<label class="nmBox"><span class="nmI">'+svg('flag')+'</span><span class="nmL">'+T('pName')+'</span><input id="pnm" maxlength="16" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="'+T('namePh')+'"></label>'+
 HM('h1','flag',T('race'),T('raceSub'),1)+HM('h4','users',T('online'),T('onlineSub'))+HM('h2','bolt',T('quick'),trN(cfg.t)+' · '+carN(cfg.c))+HM('h5','gear',T('settings'),T('settingsSub'))+HM('h3','key',T('controls'),T('controlsSub'));
-$('mf').innerHTML='';$('h1').onclick=()=>go(1);$('h2').onclick=()=>startRace();$('h3').onclick=()=>go(4);$('h4').onclick=()=>go(5);$('h5').onclick=()=>go(8);}
-else if(stepI===1){mb.innerHTML='<div class="mt">'+T('pickTrack')+'</div><div class="g2" id="oT"></div>';
-cards($('oT'),TR.map((t,i)=>({a:trN(i),h:'<canvas class="cv1"></canvas><div class="nm">'+trN(i)+'</div><div class="sub"><span class="tag" style="color:'+t.dc+';border-color:'+t.dc+'55">'+TA_('tDif')[i]+'</span>'+LEN(t.len)+'</div>',d:drawTrack})),'t',()=>rebuild());
+{const ni=$('pnm');ni.value=SET.name||'';ni.oninput=()=>{const v=ni.value.replace(/[<>&"'`]/g,'');if(v!==ni.value)ni.value=v;SET.name=v.trim().slice(0,16);saveSet();};ni.onkeydown=e=>{e.stopPropagation();if(e.key==='Enter')ni.blur();};ni.onchange=()=>{if(NET.on&&NET.conn)sendHello();};}$('mf').innerHTML='';$('h1').onclick=()=>go(1);$('h2').onclick=()=>startRace();$('h3').onclick=()=>go(4);$('h4').onclick=()=>go(5);$('h5').onclick=()=>go(8);}
+else if(stepI===1){mb.innerHTML='<div class="mt">'+T('pickTrack')+'</div><div class="g3" id="oT"></div>';
+cards($('oT'),TR.map((t,i)=>({a:trN(i),h:'<canvas class="cv3"></canvas><div class="nm">'+trN(i)+'</div><div class="sub"><i class="dd" style="background:'+t.dc+'"></i>'+TA_('tShort')[i]+'</div>',d:drawTrack})),'t',()=>rebuild());
 foot(T('back'),0,'<span>'+T('next')+'</span>'+svg('arrR'),2);}
 else if(stepI===2){mb.innerHTML='<div class="mt">'+T('pickCar')+'</div><div class="g2" id="oC"></div><div><div class="sec">'+T('paint')+' · <span id="cnm" style="color:#e8eaee;text-transform:none;letter-spacing:0">'+colN(cfg.k)+'</span></div><div id="oK" class="sws"></div></div>';
 cards($('oC'),CARS.map((c,i)=>({a:carN(i),h:'<canvas class="cv2"></canvas><div><div class="nm">'+carN(i)+'</div><div class="sub">'+TA_('tags')[i]+'</div></div>'+bar(T('stTop'),nv(c.max,1.1,1.38))+bar(T('stAcc'),nv(c.acc,0.014,0.021))+bar(T('stGrip'),nv(c.grip,0.0145,0.019))+bar(T('stOff'),nv(c.off,0.4,0.78)),d:drawCar})),'c',()=>{carChanged();});
