@@ -8,7 +8,7 @@ else{const e=sm(Math.min(1,(t-4800)/(INTRO_D-4800))),dd=19-8.2*e;px=pl.x-f*dd;pz
 if(t<120||Math.abs(t-2400)<dt||Math.abs(t-4800)<dt){cam.position.set(px,py,pz);camLook.set(lx,ly,lz);}else{const k=ex(0.02,dt);cam.position.lerp(tmp.set(px,py,pz),k);camLook.lerp(look.set(lx,ly,lz),k);}
 cam.lookAt(camLook);cam.fov+=(fv-cam.fov)*ex(0.01,dt);cam.near=0.3;cam.updateProjectionMatrix();shadowAt(gx,gz,60);if(introE>=INTRO_D)beginCount();}
 function ex(k,dt){return 1-Math.exp(-k*dt);}
-let ftAvg=16.7,drT=0,drS=1;
+let FRN=0,ftAvg=16.7,drT=0,drS=1;
 
 const HELI=(()=>{const g=new THREE.Group(),bm=S(0xf2f3f5,0.45,0.3),rm=S(0xd7263d,0.3,0.4),dk=S(0x1a1d22,0.4,0.5),gl=S(0x1d2a38,0.9,0.05),add=(geo,m,sx,sy,sz,x,y,z,p)=>{const o=new THREE.Mesh(geo,m);o.scale.set(sx,sy,sz);o.position.set(x,y,z);(p||g).add(o);return o;};
 add(GEO.ball,bm,1.25,1.15,2.4,0,0,0);add(GEO.ball,rm,1.27,0.35,2.25,0,-0.25,0);add(GEO.ball,gl,1.0,0.75,1.15,0,0.3,1.35);add(GEO.box,bm,0.34,0.34,4.6,0,0.3,-3.4);add(GEO.box,rm,0.08,1.3,0.8,0,0.95,-5.6);add(GEO.box,bm,1.6,0.08,0.5,0,0.4,-5.2);
@@ -46,7 +46,7 @@ let ge={rpm:0.15};if(mode!=='menu')ge=hud(TT);
 const sl=pl?pl.slip+(pl.hb&&Math.abs(pl.v)>0.3?0.06:0):0;
 if(mode==='race'||mode==='count'||mode==='intro')engine(true,mode!=='race'?(keys.up?0.75:0.15):ge.rpm,mode==='race'?sl:0);else if(mode==='done')engine(true,ge.rpm*0.7,0);else engine(false,0,0);
 if(mode==='done'&&$('done').classList.contains('on')){doneT+=dt;if(doneT>600){doneT=0;results();}}
-ren.render(scene,cam);requestAnimationFrame(loop);}
+cullStep();FRN++;if(cfg.q){ren.shadowMap.autoUpdate=true;}else{ren.shadowMap.autoUpdate=false;if(FRN%2===0||mode==='menu')ren.shadowMap.needsUpdate=true;}ren.render(scene,cam);requestAnimationFrame(loop);}
 function applyQ(){drS=1;ren.setPixelRatio(cfg.q?DPR:Math.min(1,DPR));const ms=Math.min(cfg.q?4096:2048,ren.capabilities.maxTextureSize);sun.shadow.mapSize.set(ms,ms);if(sun.shadow.map){sun.shadow.map.dispose();sun.shadow.map=null;}rs();}
 function rebuild(){$('load').style.display='flex';$('load').style.opacity=1;setTimeout(()=>{buildTrack(cfg.t);newRace();prev();if(stepI===6)menuRender(true);},40);}
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&!NET.on)pause();});

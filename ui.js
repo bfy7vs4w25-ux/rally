@@ -1,8 +1,8 @@
-const touch='ontouchstart'in window||navigator.maxTouchPoints>0;
+const touch='ontouchstart'in window||navigator.maxTouchPoints>0;document.body.classList.toggle('touch',touch);
 cfg.no=1;cfg.q=SET.q;cfg.rimI=0;cfg.livI=0;cfg.spnI=0;cfg.num=0;cfg.tint=0;
 function setHud(on){$('tp').style.display=on&&touch?'flex':'none';['hTL','tower','mm','sp','nit'].forEach(k=>$(k).style.display=on?'block':'none');$('hBtns').style.display=on?'flex':'none';if(touch){const sp=$('sp'),nt=$('nit');sp.style.right='auto';sp.style.left='50%';sp.style.transform='translateX(-50%)';sp.style.bottom='6px';nt.style.right='auto';nt.style.left='50%';nt.style.transform='translateX(-50%)';nt.style.bottom='192px';nt.style.width='170px';}
 if(on&&touch&&G.clientHeight<600)$('tower').style.display='none';if(!on)['ww','msg','lt','pDraft'].forEach(k=>$(k).style.display='none');}
-function show(id){['menu','pause','done'].forEach(k=>$(k).classList.toggle('on',k===id));$('vig').classList.toggle('on',id==='menu');if(id==='pause')pauseBtns();if(id==='done')doneBtns();}
+function show(id){$('g').classList.toggle('dn',id==='done'||id==='pause');['menu','pause','done'].forEach(k=>$(k).classList.toggle('on',k===id));$('vig').classList.toggle('on',id==='menu');if(id==='pause')pauseBtns();if(id==='done')doneBtns();}
 function startRace(spec){if(!spec||!spec.cars)spec=null;if(NET.on&&!spec)return;ain();camMode=SET.cam;applyWeather(spec&&spec.w?spec.w:pickWeather(TR[cfg.t].th));newRace(spec);wxToast();camYaw=pl.a;camDist=11;acc=0;mode='intro';introE=0;lamps(0);show(null);setHud(false);$('lt').style.display='none';introUI(true);cv.focus();}
 function introUI(on){const el=$('intro');if(on){const ty={clear:0,rain:1,storm:2,snow:3,wind:4}[WX.type]||0;$('inT').textContent=trN(cfg.t);$('inS').textContent=T('carsLaps',{n:cars.length,l:LAPS[cfg.l]})+' · '+TA_('wxN')[ty];$('inK').style.display=NET.on?'none':'block';}el.classList.toggle('on',on);}
 function beginCount(){if(mode!=='intro')return;introUI(false);mode='count';cdE=0;lastLit=-1;lamps(0);setHud(true);$('lt').style.display='flex';camYaw=pl.a;camDist=11;}
