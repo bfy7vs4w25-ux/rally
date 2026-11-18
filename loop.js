@@ -54,7 +54,10 @@ if(SNOW){const a=SNOW.geometry.attributes.position,ar=a.array,cx=cam.position.x,
 sky.position.copy(cam.position);sunS.position.copy(cam.position).addScaledVector(SUND,1500);
 let ge={rpm:0.15};if(mode!=='menu')ge=hud(TT);
 const sl=pl?pl.slip+(pl.hb&&Math.abs(pl.v)>0.3?0.06:0):0;
-if(mode==='race'||mode==='count'||mode==='intro')engine(true,mode!=='race'?(keys.up?0.75:0.15):ge.rpm,mode==='race'?sl:0);else if(mode==='done')engine(true,ge.rpm*0.7,0);else engine(false,0,0);
+{const rc=mode==='race',ex_=pl?{thr:rc?(pl.ai?0.7:Math.max(keys.up?1:0,pl.boost?1:0)):(keys.up?1:0),spd:pl?Math.abs(pl.v):0,kerb:rc&&pl.kerb,off:rc&&pl.dist>HW+0.4&&!pl.kerb,boost:rc&&pl.boost,gear:pl.gear}:{};
+if(mode==='race'||mode==='count'||mode==='intro')engine(true,mode!=='race'?(keys.up?0.8:0.12):ge.rpm,rc?sl:0,ex_);else if(mode==='done')engine(true,ge.rpm*0.7,0,ex_);else engine(false,0,0,{});
+if(pl&&mode!=='menu'&&mode!=='pause'){let bc=null,bd=75;for(const c of cars){if(c===pl)continue;const d_=Math.hypot(c.rx-cam.position.x,c.rz-cam.position.z);if(d_<bd){bd=d_;bc=c;}}
+if(bc){const dx=bc.rx-cam.position.x,dz=bc.rz-cam.position.z,dl=Math.hypot(dx,dz)||1,cy=Math.atan2(-cam.matrixWorld.elements[8],-cam.matrixWorld.elements[10]),ang=Math.atan2(dx,dz)-cy,rv=((bc.vx-pl.vx)*dx+(bc.vz-pl.vz)*dz)/dl;aiSnd(bc,bd,Math.sin(ang),Math.max(0.7,Math.min(1.4,1-rv*0.35)));}else aiSnd(null,99,0,1);}else aiSnd(null,99,0,1);}
 if(mode==='done'&&$('done').classList.contains('on')){doneT+=dt;if(doneT>600){doneT=0;results();}}
 dashT+=dt;if(dashT>90&&pl&&(camMode===3||camMode===2)&&mode!=='menu'){dashT=0;drawDash(pl);}rainDrops(dt);cullStep();FRN++;ren.shadowMap.autoUpdate=true;ren.render(scene,cam);requestAnimationFrame(loop);}
 function applyQ(){drS=1;ren.setPixelRatio(cfg.q?DPR:Math.min(1,DPR));const ms=Math.min(cfg.q?4096:2048,ren.capabilities.maxTextureSize);sun.shadow.mapSize.set(ms,ms);if(sun.shadow.map){sun.shadow.map.dispose();sun.shadow.map=null;}rs();}
